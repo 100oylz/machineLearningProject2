@@ -1,5 +1,6 @@
 from _import import *
 from datastruct import datastruct
+
 def setup_seed(seed) -> None:
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)

@@ -1,3 +1,5 @@
+import numpy as np
+
 from _import import *
 
 
@@ -59,7 +61,7 @@ class datastruct():
             pointer += 1
         return np.array(data), np.array(label), np.array(labelmap)
 
-    def discrete(self, slicenum=200, eps=1e-18):
+    def discrete(self, slicenum=100, eps=1e-18)->(np.ndarray,np.ndarray,np.ndarray):
         data, label, labelmap = self.rawdatatonumpy()
         if (len(data.shape) == 2):
             datamin = np.min(data, axis=0)
