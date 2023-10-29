@@ -1,15 +1,23 @@
 import torch
 from transformers import AutoTokenizer, AutoModel
+
+from config import MED_BERT, token_format
 from utils import ADNI
 
-tokenizer = AutoTokenizer.from_pretrained("Charangan/MedBERT")
-model = AutoModel.from_pretrained("Charangan/MedBERT")
+tokenizer = AutoTokenizer.from_pretrained(MED_BERT)
+model = AutoModel.from_pretrained(MED_BERT)
 
 data, label, labelmap = ADNI.discrete()
+new_token = [token_format.format(i) for i in range(ADNI.slicenum)]
+tokenizer.add_tokens(new_token)
+
 input_text = f"The patient's features are {data[0, :]}! Is he {labelmap[label[0]]}?"
 model.to('cuda')
+# print(model)
 
 input_ids = tokenizer(input_text, return_tensors="pt").input_ids.to("cuda")
+print(input_ids)
+exit(0)
 
 with torch.no_grad():
     outputs = model(input_ids)
