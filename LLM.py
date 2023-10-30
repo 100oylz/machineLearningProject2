@@ -1,12 +1,12 @@
 import torch
 import transformers
 from transformers import AutoTokenizer, AutoModel
-from typing import List
+from typing import List,Tuple
 from config import LLM_PATH, LEVEL_TOKEN_FORMAT, LABEL_TOKEN_FORMAT
 from utils import ADNI
 
 
-def getLLM() -> (transformers.PreTrainedModel, transformers.PreTrainedTokenizer):
+def getLLM() -> Tuple[transformers.PreTrainedModel, transformers.PreTrainedTokenizer]:
     tokenizer = AutoTokenizer.from_pretrained(LLM_PATH)
     model = AutoModel.from_pretrained(LLM_PATH)
     return model, tokenizer
