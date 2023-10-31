@@ -10,6 +10,7 @@ from PromptGenerate import PromptGenerate
 from maskInfo import maskinfo
 from colorlog import ColoredFormatter
 
+
 def transform_data(data, token_format):
     # 获取batch_size
     batch_size = data.size(0)
@@ -34,7 +35,8 @@ def train(dataset: datastruct.datastruct, config: trainConfig):
     # LLM.tokenizer_add_new_tokens(tokenizer, LABEL_TOKEN_FORMAT, label)
     tokens_num = tokenizer.vocab_size
     promptModel = PromptGenerate(config.init_shape, config.emb_dim, config.embLength, config.output_length)
-    maskModel = maskinfo(1024, len(labelmap), config.dropout)
+    hidden_size = model.config['hidden_size']
+    maskModel = maskinfo(hidden_size, config.hidden_features, len(labelmap), config.dropout)
     for param in model.parameters():
         param.requires_grad = False
     promptModel.to(config.device)
@@ -48,7 +50,7 @@ def train(dataset: datastruct.datastruct, config: trainConfig):
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.NAdam(list(promptModel.parameters()) + list(maskModel.parameters()), lr=config.lr,
                                   weight_decay=config.weight_decay)
-    scheduler=torch.optim.lr_scheduler.StepLR(optimizer,step_size=10,gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=config.milestones, gamma=0.1)
     best_valid_loss = float('inf')
     for epoch in range(1, config.num_epochs + 1):
         # 重置计数器和累积值
@@ -199,5 +201,7 @@ def addDataAndMaskToPrompt(data, promptModel, tokenizer, tokens_num):
 
 
 if __name__ == '__main__':
-    train(utils.ADNI, ADNIconfig)
-    train(utils.PPMI,PPMIconfig)
+    # train(utils.ADNI, ADNIconfig)
+    # train(utils.PPMI, PPMIconfig)
+    model, tokenizer = LLM.getLLM()
+    print(model.config)

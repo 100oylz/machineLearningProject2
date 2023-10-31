@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List, Tuple
 
 # MED_BERT = "gpt2-large"
 # LLM_PATH = "Charangan/MedBERT"
@@ -11,10 +12,13 @@ LEVEL_TOKEN_FORMAT = '{:0>2}'
 LABEL_TOKEN_FORMAT = '{}'
 LABEL_WORD_MAP = ['best', 'good', 'normal', 'bad', 'worst']
 
+DEFAULTMILESTONES = [10, 20, 50]
+
 
 @dataclass
 class trainConfig():
     name: str
+    milestones: List[int]
     lr: float = 1e-2
     weight_decay: float = 5e-4
     num_epochs: float = 100
@@ -22,13 +26,14 @@ class trainConfig():
     dropout: float = 0.2
     device: str = 'cuda'
     init_shape: tuple[int, int] = (256, 1)
-    emb_dim: int = 64
+    emb_dim: int = 128
     embLength: int = 256
-    output_length: int = 64
+    output_length: int = 128
     batch_size: int = 16
     mask_str: str = "[MASK]"
-    slice_num: int = 50
+    slice_num: int = 100
+    hidden_features: Tuple[int] = (256, 128, 64)
 
 
-ADNIconfig = trainConfig('ADNI')
-PPMIconfig = trainConfig('PPMI')
+ADNIconfig = trainConfig('ADNI', milestones=DEFAULTMILESTONES)
+PPMIconfig = trainConfig('PPMI', milestones=DEFAULTMILESTONES)
