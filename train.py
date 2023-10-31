@@ -27,7 +27,7 @@ def train(dataset: datastruct.datastruct, config: trainConfig):
     data, label, labelmap = dataset.discrete(slicenum=trainConfig.slice_num)
     # LLM.tokenizer_add_new_tokens(tokenizer, LEVEL_TOKEN_FORMAT,  [str(i) for i in range(dataset.slicenum)])
     # LLM.tokenizer_add_new_tokens(tokenizer, LABEL_TOKEN_FORMAT, label)
-    tokens_num = LLM.get_all_vocab_num(tokenizer)
+    tokens_num = tokenizer.vocab_size
     promptModel = PromptGenerate(config.init_shape, config.emb_dim, config.embLength, config.output_length)
     for param in model.parameters():
         param.requires_grad = False
@@ -36,7 +36,7 @@ def train(dataset: datastruct.datastruct, config: trainConfig):
     dataset = utils.CustomDataset(data, label)
     utils.setup_seed(config.seed)
     dataloader = torch.utils.data.dataloader.DataLoader(dataset, shuffle=True, batch_size=config.batch_size)
-    print(model)
+    # print(model)
     for epoch in range(1, config.num_epochs + 1):
         for batch in dataloader:
             data = batch['data']
@@ -46,11 +46,14 @@ def train(dataset: datastruct.datastruct, config: trainConfig):
             data = data.to(config.device)
             # print(data.shape)
             with torch.no_grad():
-                output: transformers.modeling_outputs.BaseModelOutputWithPoolingAndCrossAttentions = model(data)
-                last_hidden_state, pooler_output = output.to_tuple()
-                print(last_hidden_state.shape)
-                print(pooler_output.shape)
-                print(maskpos)
+                output = model(data)
+                last_hidden_state, _ = output.to_tuple()
+                maskItem: torch.Tensor = last_hidden_state[:, maskpos, :]
+                logmaskItem = maskItem.logit()
+                logmaskItem[torch.isnan(logmaskItem)] = -torch.inf
+                print(logmaskItem)
+                print(logmaskItem.shape)
+
                 # mask_tensor=pooler_output[]
 
             break
@@ -91,6 +94,8 @@ def addDataAndMaskToPrompt(data, promptModel, tokenizer, tokens_num):
     # 将重新编码后的数据转换为 torch.Tensor
     reencoded_data_tensor = torch.LongTensor(combined_data)
     print('Add Success!')
+    # print(reencoded_data_tensor)
+    print(tokens_num)
     return reencoded_data_tensor, maskpos
 
 

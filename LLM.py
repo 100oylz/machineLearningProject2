@@ -1,7 +1,7 @@
 import torch
 import transformers
 from transformers import AutoTokenizer, AutoModel
-from typing import List,Tuple
+from typing import List, Tuple
 from config import LLM_PATH, LEVEL_TOKEN_FORMAT, LABEL_TOKEN_FORMAT
 from utils import ADNI
 
@@ -20,20 +20,6 @@ def tokenizer_add_new_tokens(tokenizer: transformers.PreTrainedTokenizer, token_
     return new_tokens
 
 
-def get_all_vocab_num(tokenizer: transformers.PreTrainedTokenizer):
-    vocab_size = len(tokenizer.get_vocab())
-    special_tokens_mask = len(tokenizer.all_special_tokens)
-    added_vocab = len(tokenizer.additional_special_tokens)
-
-    total_vocab_num = vocab_size + special_tokens_mask + added_vocab
-    return total_vocab_num
-
-
 if __name__ == '__main__':
     model, tokenizer = getLLM()
     data, label, labelmap = ADNI.discrete()
-    print(get_all_vocab_num(tokenizer))
-    level_tokens = tokenizer_add_new_tokens(tokenizer, LEVEL_TOKEN_FORMAT, [str(i) for i in range(ADNI.slicenum)])
-    print(get_all_vocab_num(tokenizer))
-    label_tokens = tokenizer_add_new_tokens(tokenizer, LABEL_TOKEN_FORMAT, labelmap)
-    print(get_all_vocab_num(tokenizer))

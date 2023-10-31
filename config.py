@@ -2,7 +2,9 @@ from dataclasses import dataclass
 
 # MED_BERT = "gpt2-large"
 # LLM_PATH = "Charangan/MedBERT"
-LLM_PATH = "C:\\Users\\OYLZ\\.cache\\huggingface\\hub\\models--Charangan--MedBERT\\snapshots\\315cdfc82d4d6eb1cabfb35444095e5b975d4d9d"
+# LLM_PATH = "C:\\Users\\OYLZ\\.cache\\huggingface\\hub\\models--Charangan--MedBERT\\snapshots\\315cdfc82d4d6eb1cabfb35444095e5b975d4d9d"
+LLM_PATH='bert-large-uncased'
+
 # LEVEL_TOKEN_FORMAT = '[level_{}]'
 # LABEL_TOKEN_FORMAT = '[{}]'
 LEVEL_TOKEN_FORMAT = '{:0>2}'
