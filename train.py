@@ -7,6 +7,7 @@ import datastruct
 from config import *
 import utils
 from PromptGenerate import PromptGenerate
+from maskInfo import maskinfo
 
 
 def transform_data(data, token_format):
@@ -29,35 +30,57 @@ def train(dataset: datastruct.datastruct, config: trainConfig):
     # LLM.tokenizer_add_new_tokens(tokenizer, LABEL_TOKEN_FORMAT, label)
     tokens_num = tokenizer.vocab_size
     promptModel = PromptGenerate(config.init_shape, config.emb_dim, config.embLength, config.output_length)
+    maskModel = maskinfo(1024, len(labelmap), config.dropout)
     for param in model.parameters():
         param.requires_grad = False
     promptModel.to(config.device)
     model.to(config.device)
+    maskModel.to(config.device)
     dataset = utils.CustomDataset(data, label)
     utils.setup_seed(config.seed)
     dataloader = torch.utils.data.dataloader.DataLoader(dataset, shuffle=True, batch_size=config.batch_size)
-    # print(model)
+    criterion = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.NAdam(list(promptModel.parameters()) + list(maskModel.parameters()), lr=config.lr,
+                                  weight_decay=config.weight_decay)
+
     for epoch in range(1, config.num_epochs + 1):
+        # 重置计数器和累积值
+        epoch_loss = 0.0
+        correct_predictions = 0
+        total_samples = 0
         for batch in dataloader:
             data = batch['data']
             label = batch['label']
             data, maskpos = addDataAndMaskToPrompt(data, promptModel, tokenizer, tokens_num)
-            # print(data.shape)
             data = data.to(config.device)
-            # print(data.shape)
+            label = label.to(config.device)
             with torch.no_grad():
                 output = model(data)
-                last_hidden_state, _ = output.to_tuple()
-                maskItem: torch.Tensor = last_hidden_state[:, maskpos, :]
-                logmaskItem = maskItem.logit()
-                logmaskItem[torch.isnan(logmaskItem)] = -torch.inf
-                print(logmaskItem)
-                print(logmaskItem.shape)
 
-                # mask_tensor=pooler_output[]
+            last_hidden_state, _ = output.to_tuple()
+            maskItem = last_hidden_state[:, maskpos, :]
+            out = maskModel(maskItem)
 
-            break
-        break
+            loss = criterion(out, label.long())
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            # 计算准确率
+            _, predicted = torch.max(out, 1)
+            correct_predictions += (predicted == label).sum().item()
+            total_samples += label.size(0)
+
+            # 累积epoch损失
+            epoch_loss += loss.item()
+
+        # 计算epoch平均损失和准确率
+        epoch_loss /= len(dataloader)
+        accuracy = correct_predictions / total_samples
+
+        # 输出epoch损失和准确率
+        print(f'Epoch [{epoch}/{config.num_epochs}], Loss: {epoch_loss:.4f}, Accuracy: {accuracy * 100:.2f}%')
 
 
 def encode_data_with_special_symbols(data, tokenizer):
@@ -93,9 +116,9 @@ def addDataAndMaskToPrompt(data, promptModel, tokenizer, tokens_num):
 
     # 将重新编码后的数据转换为 torch.Tensor
     reencoded_data_tensor = torch.LongTensor(combined_data)
-    print('Add Success!')
+    # print('Add Success!')
     # print(reencoded_data_tensor)
-    print(tokens_num)
+    # print(tokens_num)
     return reencoded_data_tensor, maskpos
 
 
