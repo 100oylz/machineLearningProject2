@@ -3,7 +3,7 @@ from dataclasses import dataclass
 # MED_BERT = "gpt2-large"
 # LLM_PATH = "Charangan/MedBERT"
 # LLM_PATH = "C:\\Users\\OYLZ\\.cache\\huggingface\\hub\\models--Charangan--MedBERT\\snapshots\\315cdfc82d4d6eb1cabfb35444095e5b975d4d9d"
-LLM_PATH='bert-large-uncased'
+LLM_PATH = 'bert-large-uncased'
 
 # LEVEL_TOKEN_FORMAT = '[level_{}]'
 # LABEL_TOKEN_FORMAT = '[{}]'
@@ -15,7 +15,7 @@ LABEL_WORD_MAP = ['best', 'good', 'normal', 'bad', 'worst']
 @dataclass
 class trainConfig():
     name: str
-    lr: float = 1e-3
+    lr: float = 1e-2
     weight_decay: float = 5e-4
     num_epochs: float = 100
     seed: int = 24
@@ -31,3 +31,4 @@ class trainConfig():
 
 
 ADNIconfig = trainConfig('ADNI')
+PPMIconfig = trainConfig('PPMI')

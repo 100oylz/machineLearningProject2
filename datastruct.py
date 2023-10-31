@@ -1,4 +1,3 @@
-
 from _import import *
 
 
@@ -12,10 +11,10 @@ def loadMatFile(filepath) -> dict:
     return data_dict
 
 
-def split_train_valid_test(self, data, label, randomstate: int) -> (
+def split_train_valid_test(data, label, randomstate: int) -> (
         np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray):
     train_data, temp_data, train_label, temp_label = train_test_split(data, label, test_size=0.4,
-                                                                      random_state=randomstate, stratify=self.label)
+                                                                      random_state=randomstate, stratify=label)
 
     valid_data, test_data, valid_label, test_label = train_test_split(temp_data, temp_label, test_size=0.5,
                                                                       random_state=randomstate, stratify=temp_label)
