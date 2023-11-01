@@ -2,12 +2,12 @@ import torch.utils.data
 import LLM
 import config
 import customdataset
-import datastruct
+
 from config import *
 import utils
 from PromptGenerate import PromptGenerate
 from maskInfo import maskmodel
-
+from datastruct import split_train_valid_test
 from utils import logConfig
 
 def batchProcess(config, correct_predictions, criterion, epoch_loss, maskModel, model, optimizer, promptModel,
@@ -143,19 +143,19 @@ def transform_data(data, token_format):
     return formatted_data
 
 
-def train(dataset: datastruct.datastruct, config: trainConfig):
+def train(dataset: datastruct, config: trainConfig):
     """
     训练函数。
 
     Args:
-        dataset (datastruct.datastruct): 数据集。
+        dataset (datastruct): 数据集。
         config (trainConfig): 训练配置。
     """
     utils.setup_seed(config.seed)
     logger = logConfig(config)
     model, tokenizer = LLM.getLLM()
     data, label, labelmap = dataset.discrete(slicenum=trainConfig.slice_num)
-    traindata, trainlabel, validdata, validlabel, testdata, testlabel = datastruct.split_train_valid_test(data, label,
+    traindata, trainlabel, validdata, validlabel, testdata, testlabel = split_train_valid_test(data, label,
                                                                                                           randomstate=1)
     # LLM.tokenizer_add_new_tokens(tokenizer, LEVEL_TOKEN_FORMAT,  [str(i) for i in range(dataset.slicenum)])
     # LLM.tokenizer_add_new_tokens(tokenizer, LABEL_TOKEN_FORMAT, label)
