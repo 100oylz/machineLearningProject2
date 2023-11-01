@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 
-class maskinfo(nn.Module):
+class maskmodel(nn.Module):
     def __init__(self, in_features, hidden_features, out_features,dropout):
         """
         初始化神经网络模型。

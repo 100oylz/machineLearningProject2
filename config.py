@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import List, Tuple
 
+from datastruct import datastruct
+
 # MED_BERT = "gpt2-large"
 # LLM_PATH = "Charangan/MedBERT"
 # LLM_PATH = "C:\\Users\\OYLZ\\.cache\\huggingface\\hub\\models--Charangan--MedBERT\\snapshots\\315cdfc82d4d6eb1cabfb35444095e5b975d4d9d"
@@ -19,7 +21,7 @@ DEFAULTMILESTONES = [10, 20, 50]
 class trainConfig():
     name: str
     milestones: List[int]
-    lr: float = 1e-2
+    lr: float = 1e-4
     weight_decay: float = 5e-4
     num_epochs: float = 100
     seed: int = 24
@@ -37,3 +39,8 @@ class trainConfig():
 
 ADNIconfig = trainConfig('ADNI', milestones=DEFAULTMILESTONES)
 PPMIconfig = trainConfig('PPMI', milestones=DEFAULTMILESTONES)
+ADNI = datastruct('ADNI', 'ADNI')
+PPMI = datastruct('PPMI', 'PPMI')
+ADNI_fMRI = datastruct('ADNI_fMRI', 'ADNI_90_120_fMRI')
+OCD_fMRI = datastruct('OCD_fMRI', 'OCD_90_200_fMRI')
+FTD_fMRI = datastruct('FTD_fMRI', 'FTD_90_200_fMRI')

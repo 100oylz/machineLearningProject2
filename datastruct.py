@@ -1,7 +1,15 @@
 from _import import *
 
+def loadMatFile(filepath: str) -> dict:
+    """
+    从MATLAB文件中加载数据。
 
-def loadMatFile(filepath) -> dict:
+    参数：
+        filepath (str)：MATLAB文件的路径。
+
+    返回：
+        dict：包含加载数据的字典。
+    """
     data = IO.loadmat(filepath)
     data_dict = {}
     for key, value in data.items():
@@ -10,9 +18,24 @@ def loadMatFile(filepath) -> dict:
             data_dict[key] = value.astype('float64')
     return data_dict
 
-
-def split_train_valid_test(data, label, randomstate: int) -> (
+def split_train_valid_test(data: np.ndarray, label: np.ndarray, randomstate: int) -> (
         np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray):
+    """
+    将数据和标签分割成训练、验证和测试集。
+
+    参数：
+        data (np.ndarray)：输入数据。
+        label (np.ndarray)：对应的标签。
+        randomstate (int)：随机数生成器的种子。
+
+    返回：
+        np.ndarray：训练数据。
+        np.ndarray：训练标签。
+        np.ndarray：验证数据。
+        np.ndarray：验证标签。
+        np.ndarray：测试数据。
+        np.ndarray：测试标签。
+    """
     train_data, temp_data, train_label, temp_label = train_test_split(data, label, test_size=0.4,
                                                                       random_state=randomstate, stratify=label)
 
@@ -21,9 +44,15 @@ def split_train_valid_test(data, label, randomstate: int) -> (
 
     return train_data, train_label, valid_data, valid_label, test_data, test_label
 
-
 class datastruct():
     def __init__(self, datasetname: str, filename: str):
+        """
+        初始化datastruct对象。
+
+        参数：
+            datasetname (str)：数据集的名称。
+            filename (str)：包含数据集的MATLAB文件的文件名。
+        """
         self.datasetname = datasetname
         self.filepath = f'dataset/{filename}.mat'
         self.rawdata = loadMatFile(self.filepath)
@@ -33,6 +62,12 @@ class datastruct():
         self.rawdata = self.__normalize()
 
     def __normalize(self) -> dict:
+        """
+        对原始数据进行归一化处理。
+
+        返回：
+            dict：包含归一化后数据的字典。
+        """
         newdatadict = {}
         for key, value in self.rawdata.items():
             valuemean = np.mean(value, axis=0)
@@ -47,6 +82,14 @@ class datastruct():
         return newdatadict
 
     def rawdatatonumpy(self) -> (np.ndarray, np.ndarray, np.ndarray):
+        """
+        将原始数据转换为NumPy数组。
+
+        返回：
+            np.ndarray：数据。
+            np.ndarray：标签。
+            np.ndarray：标签映射。
+        """
         data = []
         label = []
         labelmap = []
@@ -60,9 +103,21 @@ class datastruct():
         return np.array(data), np.array(label), np.array(labelmap)
 
     def discrete(self, slicenum=100, eps=1e-18) -> (np.ndarray, np.ndarray, np.ndarray):
+        """
+        对数据进行离散化处理。
+
+        参数：
+            slicenum (int, 可选)：离散化的分段数。默认为100。
+            eps (float, 可选)：避免除零的小值。默认为1e-18。
+
+        返回：
+            np.ndarray：离散化后的数据。
+            np.ndarray：标签。
+            np.ndarray：标签映射。
+        """
         self.slicenum = slicenum
         data, label, labelmap = self.rawdatatonumpy()
-        if (len(data.shape) == 2):
+        if len(data.shape) == 2:
             datamin = np.min(data, axis=0)
             datamax = np.max(data, axis=0)
             datamax = datamax + eps
@@ -70,13 +125,13 @@ class datastruct():
             assert datamax.shape[0] == data.shape[1]
 
             num = data.shape[1]
-            if (self.slices == []):
+            if not self.slices:
                 self.__generateslice(datamax, datamin, num, slicenum)
             for i in range(data.shape[1]):
                 data[:, i] = np.digitize(data[:, i], self.slices[i, :])
             data = data.astype(int)
             return data, label, labelmap
-        elif (len(data.shape) == 3):
+        elif len(data.shape) == 3:
             datamin = np.array([np.min(data[:, i, :]) for i in range(data.shape[1])])
             datamax = np.array([np.max(data[:, i, :]) for i in range(data.shape[1])])
             datamax = datamax + eps
@@ -84,7 +139,7 @@ class datastruct():
             assert datamax.shape[0] == data.shape[1]
 
             num = data.shape[1]
-            if (self.slices == []):
+            if not self.slices:
                 self.__generateslice(datamax, datamin, num, slicenum)
             for i in range(data.shape[1]):
                 data[:, i, :] = np.digitize(data[:, i, :], self.slices[i, :])
@@ -93,7 +148,16 @@ class datastruct():
         else:
             raise NotImplementedError('len(data.shape)!=2&&len(data.shape)!=3 Not Implement!')
 
-    def __generateslice(self, datamax, datamin, num, slicenum):
+    def __generateslice(self, datamax: np.ndarray, datamin: np.ndarray, num: int, slicenum: int):
+        """
+        生成离散化的切片。
+
+        参数：
+            datamax (np.ndarray)：每个特征的最大值。
+            datamin (np.ndarray)：每个特征的最小值。
+            num (int)：特征数量。
+            slicenum (int)：离散化的分段数。
+        """
         for min, max in zip(datamin, datamax):
             label_slice = np.linspace(min, max, slicenum)
             self.slices.append(label_slice)
