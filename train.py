@@ -107,20 +107,16 @@ def addDataAndMaskToPrompt(data, promptModel, tokenizer, tokens_num):
         encoded_data.append(encoded_item)
     datalength = len(encoded_item) + trainConfig.output_length
 
-    prompt, maskpos = promptModel(tokens_num, datalength, tokenizer)
+    beforePrompt,afterPrompt,maskpos = promptModel(tokens_num, datalength, tokenizer)
 
-    # 将 prompt 和 encoded_data 拼接成一个列表
+    batch_size=len(encoded_data)
+    beforePrompt=beforePrompt.expand(batch_size,-1)
+    afterPrompt=afterPrompt.expand(batch_size,-1)
+    data=torch.Tensor(encoded_data).to(beforePrompt.device)
+    
+    data_tensor=torch.cat((beforePrompt,data,afterPrompt),dim=1)
 
-    combined_data = [prompt.tolist() + data for data in
-                     encoded_data]
-    # assert all([len(data) == datalength for data in combined_data]), "Length Error"
-    for data in combined_data:
-        data.insert(tokenizer.mask_token_id, maskpos)
-
-    # 将重新编码后的数据转换为 torch.Tensor
-    reencoded_data_tensor = torch.LongTensor(combined_data)
-
-    return reencoded_data_tensor, maskpos
+    return data_tensor.long(), maskpos
 
 
 def transform_data(data, token_format):
@@ -166,7 +162,7 @@ def train(dataset: datastruct, config: trainConfig):
         # LLM.tokenizer_add_new_tokens(tokenizer, LEVEL_TOKEN_FORMAT,  [str(i) for i in range(dataset.slicenum)])
         # LLM.tokenizer_add_new_tokens(tokenizer, LABEL_TOKEN_FORMAT, label)
         tokens_num = tokenizer.vocab_size
-        promptModel = PromptGenerate(config.init_shape, config.emb_dim, config.embLength, config.output_length)
+        promptModel = PromptGenerate(config.init_shape, config.emb_dim, config.embLength, config.output_length,config.device)
         hidden_size = model.config.hidden_size
         maskModel = maskmodel(hidden_size, config.hidden_features, len(labelmap), config.dropout)
         for param in model.parameters():
@@ -182,7 +178,7 @@ def train(dataset: datastruct, config: trainConfig):
         criterion = torch.nn.CrossEntropyLoss()
         optimizer = torch.optim.NAdam(list(promptModel.parameters()) + list(maskModel.parameters()), lr=config.lr,
                                       weight_decay=config.weight_decay)
-        # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=config.milestones, gamma=0.1)
+        scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=config.milestones, gamma=0.1)
         best_valid_loss = float('inf')
         for epoch in range(1, config.num_epochs + 1):
             # 重置计数器和累积值
@@ -212,7 +208,7 @@ def train(dataset: datastruct, config: trainConfig):
 
             promptModel.train()
             maskModel.train()
-            # scheduler.step()
+            scheduler.step()
             # 计算epoch平均损失和准确率
             epoch_loss /= len(traindataloader)
             accuracy = correct_predictions / total_samples
@@ -224,7 +220,7 @@ def train(dataset: datastruct, config: trainConfig):
                 # 保存模型
                 torch.save(promptModel, f'checkpoint/promptModel/{config.name}_{randomstate}_promptModel.pt')
                 torch.save(maskModel, f'checkpoint/maskModel/{config.name}_{randomstate}_maskModel.pt')
-                logger.info(f'Epoch [{epoch}/{config.num_epochs}], Train Loss: {epoch_loss:.4f} Saved!')
+                logger.info(f'Epoch [{epoch}/{config.num_epochs}], , Valid Loss: {valid_epoch_loss:.4f}!')
 
             logger.info(
                 f'Epoch [{epoch}/{config.num_epochs}], Train Loss: {epoch_loss:.4f}, Train Accuracy: {accuracy * 100:.2f}%, Valid Loss: {valid_epoch_loss:.4f}, Valid Accuracy: {valid_accuracy * 100:.2f}%')

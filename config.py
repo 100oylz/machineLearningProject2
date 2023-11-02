@@ -14,7 +14,7 @@ LEVEL_TOKEN_FORMAT = '{:0>2}'
 LABEL_TOKEN_FORMAT = '{}'
 LABEL_WORD_MAP = ['best', 'good', 'normal', 'bad', 'worst']
 
-DEFAULTMILESTONES = [5,10,20]
+DEFAULTMILESTONES = [10,20]
 
 
 @dataclass
@@ -27,11 +27,11 @@ class trainConfig():
     seed: int = 24
     dropout: float = 0.2
     device: str = 'cuda'
-    init_shape: tuple[int, int] = (64, 16)
+    init_shape: tuple[int, int] = (32,32)
     emb_dim: int = 64
     embLength: int = 256
     output_length: int = 64
-    batch_size: int = 16
+    batch_size: int = 4
     mask_str: str = "[MASK]"
     slice_num: int = 100
     hidden_features: Tuple[int] = (128, 64)

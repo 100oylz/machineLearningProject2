@@ -5,7 +5,7 @@ from transformers import PreTrainedTokenizer
 
 class PromptGenerate(nn.Module):
     def __init__(self, init_shape: tuple = (256, 1), embedding_dim: int = 2048, gru_hidden_size: int = 256,
-                 output_length: int = 64):
+                 output_length: int = 64,device='cuda'):
         """
         初始化PromptGenerate模型。
 
@@ -17,6 +17,7 @@ class PromptGenerate(nn.Module):
         """
         super().__init__()
         self.init_shape = init_shape
+        self.device=device
         temp = torch.randint(0, init_shape[0], init_shape, dtype=torch.long)
         # 注册V，是一个dtype为整形的矩阵，用来计算prompt
         self.register_buffer('V', temp)
@@ -28,7 +29,8 @@ class PromptGenerate(nn.Module):
         self.linear = nn.Linear(gru_hidden_size * init_shape[0]*init_shape[1], output_length)
         self.relu = nn.ReLU()
         self.embLength = gru_hidden_size
-        self.linear1 = nn.Linear(init_shape[0] * init_shape[1], 1)
+        self.linear1 = nn.Linear(init_shape[0] * init_shape[1], 2)
+        self.to(self.device)
 
     def forward(self, tokenizer_length: int, datalength: int, tokenizer: PreTrainedTokenizer) -> tuple:
         """
@@ -54,19 +56,29 @@ class PromptGenerate(nn.Module):
 
         scaled_integers = normalized_out * tokenizer_length
         # 建立整数映射
-        scaled_integers = scaled_integers.clamp(0, tokenizer_length - 1).long()
-
-        special_token_id = tokenizer.convert_tokens_to_ids('[UNK]')
-        scaled_integers[scaled_integers == special_token_id] = special_token_id
-
-        maskpos = self.linear1(self.P.view(-1))
+        scaled_integers = scaled_integers.clamp(0, tokenizer_length - 1).long().to(self.device)
+        positem = self.linear1(self.P.view(-1))
         # 建立整数映射
-        maskpos = abs(int(maskpos.item() * (datalength + 1))) // (datalength + 1)
-        return scaled_integers, maskpos
+        maskpos=positem[0]
+        slicepos=positem[1]
+        maskpos=int(abs(maskpos.item())*datalength)%datalength
+        slicepos=int(abs(slicepos.item()*(datalength+1)))%(datalength+1)
+        
+                
+        masktokenid=tokenizer.mask_token_id
+        starttokenid=tokenizer.cls_token_id
+        endtokenid=tokenizer.sep_token_id
+        
+        start_tensor=torch.Tensor([starttokenid]).to(self.device)
+        end_tensor=torch.Tensor([endtokenid]).to(self.device)
+        mask_tensor=torch.Tensor([masktokenid]).to(self.device)
+
+        scaled_integers= torch.cat((start_tensor,scaled_integers[:maskpos],mask_tensor, scaled_integers[maskpos:],end_tensor))
+        
+        beforePrompt=scaled_integers[:slicepos]
+        afterPrompt=scaled_integers[slicepos:]
 
 
-if __name__ == '__main__':
-    promptModel = PromptGenerate()
-    res = promptModel(50000)
-    print(res)
-    print(res.shape)
+        return beforePrompt,afterPrompt,maskpos
+
+

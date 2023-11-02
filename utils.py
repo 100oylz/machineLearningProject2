@@ -52,7 +52,7 @@ def logConfig(config,randomstate):
     console_handler.setFormatter(formatter)
 
     # 创建一个新的文件处理程序（每次都创建新的处理程序）
-    log_filename = f'journal/{config.name})_{randomstate}.log'
+    log_filename = f'journal/{config.name}_{randomstate}.log'
     file_handler = logging.FileHandler(log_filename, mode='w')
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
