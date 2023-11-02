@@ -25,7 +25,7 @@ class PromptGenerate(nn.Module):
 
         self.emb = nn.Embedding(init_shape[0], embedding_dim)
         self.gru = nn.GRU(embedding_dim, gru_hidden_size)
-        self.linear = nn.Linear(gru_hidden_size * init_shape[0], output_length)
+        self.linear = nn.Linear(gru_hidden_size * init_shape[0]*init_shape[1], output_length)
         self.relu = nn.ReLU()
         self.embLength = gru_hidden_size
         self.linear1 = nn.Linear(init_shape[0] * init_shape[1], 1)

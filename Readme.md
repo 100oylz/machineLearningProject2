@@ -37,7 +37,8 @@
 ## prompt生成
 
 1. 获取LLM的vocab_size(词表空间)
-2. 规定prompt的长度(==也许也可以通过神经网络学习到==)
+2. 规定prompt的长度
+   - (==也许也可以通过神经网络学习到==)
 3. 获取不加mask时得到的prompt+data的数据长度datalength
 4. 根据神经网络，分别初始化两个buffer，一个buffer计算prompt，另一个计算maskpos
 5. 拼接prompt和data

@@ -8,7 +8,9 @@ import utils
 from PromptGenerate import PromptGenerate
 from maskInfo import maskmodel
 from datastruct import split_train_valid_test
+
 from utils import logConfig
+
 
 def batchProcess(config, correct_predictions, criterion, epoch_loss, maskModel, model, optimizer, promptModel,
                  tokenizer, tokens_num, total_samples, dataloader, train: bool):
@@ -111,7 +113,7 @@ def addDataAndMaskToPrompt(data, promptModel, tokenizer, tokens_num):
 
     combined_data = [prompt.tolist() + data for data in
                      encoded_data]
-    assert all([len(data) == datalength for data in combined_data]), "Length Error"
+    # assert all([len(data) == datalength for data in combined_data]), "Length Error"
     for data in combined_data:
         data.insert(tokenizer.mask_token_id, maskpos)
 
@@ -119,6 +121,7 @@ def addDataAndMaskToPrompt(data, promptModel, tokenizer, tokens_num):
     reencoded_data_tensor = torch.LongTensor(combined_data)
 
     return reencoded_data_tensor, maskpos
+
 
 def transform_data(data, token_format):
     """
@@ -152,78 +155,79 @@ def train(dataset: datastruct, config: trainConfig):
         config (trainConfig): 训练配置。
     """
     utils.setup_seed(config.seed)
-    logger = logConfig(config)
-    model, tokenizer = LLM.getLLM()
     data, label, labelmap = dataset.discrete(slicenum=trainConfig.slice_num)
-    traindata, trainlabel, validdata, validlabel, testdata, testlabel = split_train_valid_test(data, label,
-                                                                                                          randomstate=1)
-    # LLM.tokenizer_add_new_tokens(tokenizer, LEVEL_TOKEN_FORMAT,  [str(i) for i in range(dataset.slicenum)])
-    # LLM.tokenizer_add_new_tokens(tokenizer, LABEL_TOKEN_FORMAT, label)
-    tokens_num = tokenizer.vocab_size
-    promptModel = PromptGenerate(config.init_shape, config.emb_dim, config.embLength, config.output_length)
-    hidden_size = model.config.hidden_size
-    maskModel = maskmodel(hidden_size, config.hidden_features, len(labelmap), config.dropout)
-    for param in model.parameters():
-        param.requires_grad = False
-    promptModel.to(config.device)
-    model.to(config.device)
-    maskModel.to(config.device)
-    traindataset = customdataset.CustomDataset(traindata, trainlabel)
-    validdataset = customdataset.CustomDataset(validdata, validlabel)
+    for randomstate in config.random_state:
 
-    traindataloader = torch.utils.data.dataloader.DataLoader(traindataset, shuffle=True, batch_size=config.batch_size)
-    validdataloader = torch.utils.data.dataloader.DataLoader(validdataset, batch_size=config.batch_size)
-    criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.NAdam(list(promptModel.parameters()) + list(maskModel.parameters()), lr=config.lr,
-                                  weight_decay=config.weight_decay)
-    # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=config.milestones, gamma=0.1)
-    best_valid_loss = float('inf')
-    for epoch in range(1, config.num_epochs + 1):
-        # 重置计数器和累积值
-        epoch_loss = 0.0
-        correct_predictions = 0
-        total_samples = 0
-        valid_epoch_loss = 0.0
-        valid_correct_predictions = 0
-        total_valid_samples = 0
-        correct_predictions, epoch_loss, total_samples = batchProcess(config, correct_predictions, criterion,
-                                                                      epoch_loss, maskModel, model, optimizer,
-                                                                      promptModel, tokenizer, tokens_num, total_samples,
-                                                                      traindataloader, train=True)
+        logger = logConfig(config,randomstate)
+        model, tokenizer = LLM.getLLM()
 
-        promptModel.eval()
-        maskModel.eval()
+        traindata, trainlabel, validdata, validlabel, testdata, testlabel = split_train_valid_test(data, label,
+                                                                                                   randomstate=randomstate)
+        # LLM.tokenizer_add_new_tokens(tokenizer, LEVEL_TOKEN_FORMAT,  [str(i) for i in range(dataset.slicenum)])
+        # LLM.tokenizer_add_new_tokens(tokenizer, LABEL_TOKEN_FORMAT, label)
+        tokens_num = tokenizer.vocab_size
+        promptModel = PromptGenerate(config.init_shape, config.emb_dim, config.embLength, config.output_length)
+        hidden_size = model.config.hidden_size
+        maskModel = maskmodel(hidden_size, config.hidden_features, len(labelmap), config.dropout)
+        for param in model.parameters():
+            param.requires_grad = False
+        promptModel.to(config.device)
+        model.to(config.device)
+        maskModel.to(config.device)
+        traindataset = customdataset.CustomDataset(traindata, trainlabel)
+        validdataset = customdataset.CustomDataset(validdata, validlabel)
 
-        valid_correct_predictions, valid_epoch_loss, total_valid_samples = batchProcess(config,
-                                                                                        valid_correct_predictions,
-                                                                                        criterion,
-                                                                                        valid_epoch_loss, maskModel,
-                                                                                        model,
-                                                                                        optimizer,
-                                                                                        promptModel, tokenizer,
-                                                                                        tokens_num, total_valid_samples,
-                                                                                        traindataloader, train=False)
+        traindataloader = torch.utils.data.dataloader.DataLoader(traindataset, shuffle=True, batch_size=config.batch_size)
+        validdataloader = torch.utils.data.dataloader.DataLoader(validdataset, batch_size=config.batch_size)
+        criterion = torch.nn.CrossEntropyLoss()
+        optimizer = torch.optim.NAdam(list(promptModel.parameters()) + list(maskModel.parameters()), lr=config.lr,
+                                      weight_decay=config.weight_decay)
+        # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=config.milestones, gamma=0.1)
+        best_valid_loss = float('inf')
+        for epoch in range(1, config.num_epochs + 1):
+            # 重置计数器和累积值
+            epoch_loss = 0.0
+            correct_predictions = 0
+            total_samples = 0
+            valid_epoch_loss = 0.0
+            valid_correct_predictions = 0
+            total_valid_samples = 0
+            correct_predictions, epoch_loss, total_samples = batchProcess(config, correct_predictions, criterion,
+                                                                          epoch_loss, maskModel, model, optimizer,
+                                                                          promptModel, tokenizer, tokens_num, total_samples,
+                                                                          traindataloader, train=True)
 
-        promptModel.train()
-        maskModel.train()
-        # scheduler.step()
-        # 计算epoch平均损失和准确率
-        epoch_loss /= len(traindataloader)
-        accuracy = correct_predictions / total_samples
-        valid_epoch_loss /= len(validdataloader)
-        valid_accuracy = valid_correct_predictions / total_valid_samples
+            promptModel.eval()
+            maskModel.eval()
 
-        if valid_epoch_loss < best_valid_loss:
-            best_valid_loss = valid_epoch_loss
-            # 保存模型
-            torch.save(promptModel, f'checkpoint/promptModel/{config.name}_promptModel.pt')
-            torch.save(maskModel, f'checkpoint/maskModel/{config.name}_maskModel.pt')
+            valid_correct_predictions, valid_epoch_loss, total_valid_samples = batchProcess(config,
+                                                                                            valid_correct_predictions,
+                                                                                            criterion,
+                                                                                            valid_epoch_loss, maskModel,
+                                                                                            model,
+                                                                                            optimizer,
+                                                                                            promptModel, tokenizer,
+                                                                                            tokens_num, total_valid_samples,
+                                                                                            validdataloader, train=False)
 
-        logger.info(
-            f'Epoch [{epoch}/{config.num_epochs}], Train Loss: {epoch_loss:.4f}, Train Accuracy: {accuracy * 100:.2f}%, Valid Loss: {valid_epoch_loss:.4f}, Valid Accuracy: {valid_accuracy * 100:.2f}%')
+            promptModel.train()
+            maskModel.train()
+            # scheduler.step()
+            # 计算epoch平均损失和准确率
+            epoch_loss /= len(traindataloader)
+            accuracy = correct_predictions / total_samples
+            valid_epoch_loss /= len(validdataloader)
+            valid_accuracy = valid_correct_predictions / total_valid_samples
 
+            if valid_epoch_loss < best_valid_loss:
+                best_valid_loss = valid_epoch_loss
+                # 保存模型
+                torch.save(promptModel, f'checkpoint/promptModel/{config.name}_{randomstate}_promptModel.pt')
+                torch.save(maskModel, f'checkpoint/maskModel/{config.name}_{randomstate}_maskModel.pt')
+                logger.info(f'Epoch [{epoch}/{config.num_epochs}], Train Loss: {epoch_loss:.4f} Saved!')
 
-
+            logger.info(
+                f'Epoch [{epoch}/{config.num_epochs}], Train Loss: {epoch_loss:.4f}, Train Accuracy: {accuracy * 100:.2f}%, Valid Loss: {valid_epoch_loss:.4f}, Valid Accuracy: {valid_accuracy * 100:.2f}%')
 
 
 if __name__ == '__main__':

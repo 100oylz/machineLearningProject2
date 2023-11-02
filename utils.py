@@ -16,7 +16,7 @@ def setup_seed(seed) -> None:
     torch.backends.cudnn.deterministic = True
 
 
-def logConfig(config):
+def logConfig(config,randomstate):
     """
     配置日志记录。
 
@@ -43,7 +43,7 @@ def logConfig(config):
     )
 
     # 创建新的logger对象
-    logger = logging.getLogger(f'{config.name}_logger')
+    logger = logging.getLogger(f'{config.name}_{randomstate}_logger')
     logger.setLevel(logging.DEBUG)
 
     # 创建一个用于在控制台输出的处理程序
@@ -52,7 +52,7 @@ def logConfig(config):
     console_handler.setFormatter(formatter)
 
     # 创建一个新的文件处理程序（每次都创建新的处理程序）
-    log_filename = f'journal/{config.name}.log'
+    log_filename = f'journal/{config.name})_{randomstate}.log'
     file_handler = logging.FileHandler(log_filename, mode='w')
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))

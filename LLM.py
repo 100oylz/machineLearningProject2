@@ -1,6 +1,6 @@
 import torch
 import transformers
-from transformers import AutoTokenizer, AutoModel
+from transformers import AutoTokenizer, AutoModel, BertConfig
 from typing import List, Tuple
 from config import LLM_PATH, LEVEL_TOKEN_FORMAT, LABEL_TOKEN_FORMAT, ADNI
 
@@ -13,9 +13,11 @@ def getLLM() -> Tuple[transformers.PreTrainedModel, transformers.PreTrainedToken
         Tuple[transformers.PreTrainedModel, transformers.PreTrainedTokenizer]:
         包含加载的语言模型和分词器的元组。
     """
+    custom_config = BertConfig.from_pretrained('hfl/chinese-macbert-large')
     tokenizer = AutoTokenizer.from_pretrained(LLM_PATH)
-    model = AutoModel.from_pretrained(LLM_PATH)
+    model = AutoModel.from_pretrained(LLM_PATH, config=custom_config)
     return model, tokenizer
+
 
 # 下面的函数目前看起来没有使用，可能是为了将来的用途。
 def tokenizer_add_new_tokens(tokenizer: transformers.PreTrainedTokenizer, token_format: str,
@@ -35,6 +37,7 @@ def tokenizer_add_new_tokens(tokenizer: transformers.PreTrainedTokenizer, token_
     tokenizer.add_tokens(new_tokens)
     assert all(token in tokenizer.get_added_vocab() for token in new_tokens), "Tokenizer False Added!"
     return new_tokens
+
 
 if __name__ == '__main__':
     model, tokenizer = getLLM()
