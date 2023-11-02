@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 >nul
 
 REM 添加所有更改
 git add -A

@@ -1,2 +1,0 @@
-2023-11-01 16:54:44,550 - INFO - Epoch [1/100], Train Loss: 1.7780 Saved!
-2023-11-01 16:54:44,550 - INFO - Epoch [1/100], Train Loss: 1.7780, Train Accuracy: 22.22%, Valid Loss: 1.5122, Valid Accuracy: 38.33%
