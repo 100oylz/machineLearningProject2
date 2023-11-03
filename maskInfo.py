@@ -44,6 +44,7 @@ class maskmodel(nn.Module):
         # 构建残差连接层
         for hidden_feature in hidden_features:
             layers.append(nn.Linear(in_features, hidden_feature))
+            layers.append(nn.BatchNorm1d(hidden_feature,eps=1e-18))
             layers.append(nn.Dropout(p=self.dropout))  # 随机失活层
             layers.append(nn.ReLU())  # 激活函数
             in_features = hidden_feature

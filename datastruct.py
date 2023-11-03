@@ -1,5 +1,6 @@
 from _import import *
 
+
 def loadMatFile(filepath: str) -> dict:
     """
     从MATLAB文件中加载数据。
@@ -17,6 +18,7 @@ def loadMatFile(filepath: str) -> dict:
             value = np.ascontiguousarray(value)
             data_dict[key] = value.astype('float64')
     return data_dict
+
 
 def split_train_valid_test(data: np.ndarray, label: np.ndarray, randomstate: int) -> (
         np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray):
@@ -43,6 +45,7 @@ def split_train_valid_test(data: np.ndarray, label: np.ndarray, randomstate: int
                                                                       random_state=randomstate, stratify=temp_label)
 
     return train_data, train_label, valid_data, valid_label, test_data, test_label
+
 
 class datastruct():
     def __init__(self, datasetname: str, filename: str):
@@ -132,18 +135,19 @@ class datastruct():
             data = data.astype(int)
             return data, label, labelmap
         elif len(data.shape) == 3:
-            datamin = np.array([np.min(data[:, i, :]) for i in range(data.shape[1])])
-            datamax = np.array([np.max(data[:, i, :]) for i in range(data.shape[1])])
+            data = data.transpose((-1, -2))
+            datamin = np.array([np.min(data[:, :, i]) for i in range(data.shape[1])])
+            datamax = np.array([np.max(data[:, :, i]) for i in range(data.shape[1])])
             datamax = datamax + eps
-            assert datamin.shape[0] == data.shape[1]
-            assert datamax.shape[0] == data.shape[1]
+            assert datamin.shape[0] == data.shape[2]
+            assert datamax.shape[0] == data.shape[2]
 
             num = data.shape[1]
             if not self.slices:
                 self.__generateslice(datamax, datamin, num, slicenum)
             for i in range(data.shape[1]):
-                data[:, i, :] = np.digitize(data[:, i, :], self.slices[i, :])
-            data = data.astype(int)
+                data[:, :, i] = np.digitize(data[:, :, i], self.slices[i, :])
+            data: np.ndarray = data.astype(int)
             return data, label, labelmap
         else:
             raise NotImplementedError('len(data.shape)!=2&&len(data.shape)!=3 Not Implement!')

@@ -14,20 +14,20 @@ LEVEL_TOKEN_FORMAT = '{:0>2}'
 LABEL_TOKEN_FORMAT = '{}'
 LABEL_WORD_MAP = ['best', 'good', 'normal', 'bad', 'worst']
 
-DEFAULTMILESTONES = [10,20]
+DEFAULTMILESTONES = [10, 20]
 
 
 @dataclass
 class trainConfig():
     name: str
     milestones: List[int]
-    lr: float = 1e-2
+    lr: float = 5e-4
     weight_decay: float = 5e-4
     num_epochs: float = 50
     seed: int = 24
     dropout: float = 0.2
     device: str = 'cuda'
-    init_shape: tuple[int, int] = (32,32)
+    init_shape: tuple[int, int] = (32, 32)
     emb_dim: int = 64
     embLength: int = 256
     output_length: int = 64
@@ -35,11 +35,37 @@ class trainConfig():
     mask_str: str = "[MASK]"
     slice_num: int = 100
     hidden_features: Tuple[int] = (128, 64)
-    random_state:Tuple[int]=(0,1,2,3,4)
+    random_state: Tuple[int] = (0, 1, 2, 3, 4)
+    saved_by_valid_loss: bool = True
 
+
+@dataclass
+class trainAutoEncoderConfig():
+    name: str
+    lr: float = 5e-4
+    weight_decay: float = 5e-4
+    num_epochs: float = 50
+    seed: int = 24
+    dropout: float = 0.2
+    device: str = 'cuda'
+    init_shape: tuple[int, int] = (32, 32)
+    emb_dim: int = 64
+    embLength: int = 256
+    output_length: int = 64
+    batch_size: int = 4
+    slice_num: int = 100
+    hidden_features: Tuple[int] = (128, 64)
+    random_state: Tuple[int] = (0, 1, 2, 3, 4)
+    saved_by_valid_loss: bool = True
+
+
+ADNI_fMRI_autoencoder_config = trainAutoEncoderConfig('ADNI_fMRI')
+OCD_fMRI_autoencoder_config = trainAutoEncoderConfig('OCD_fMRI')
+FTD_fMRI_autoencoder_config = trainAutoEncoderConfig('FTD_fMRI')
 
 ADNIconfig = trainConfig('ADNI', milestones=DEFAULTMILESTONES)
-PPMIconfig = trainConfig('PPMI', milestones=DEFAULTMILESTONES)
+PPMIconfig = trainConfig('PPMI', milestones=DEFAULTMILESTONES, batch_size=8, saved_by_valid_loss=False, dropout=0.3)
+
 ADNI = datastruct('ADNI', 'ADNI')
 PPMI = datastruct('PPMI', 'PPMI')
 ADNI_fMRI = datastruct('ADNI_fMRI', 'ADNI_90_120_fMRI')
