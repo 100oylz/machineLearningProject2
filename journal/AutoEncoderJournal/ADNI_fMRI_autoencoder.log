@@ -1,0 +1,38 @@
+2023-11-03 21:12:05,009 - INFO - Training Loss: 0.9961
+2023-11-03 21:12:05,055 - INFO - Saved the best model with average loss: 0.9961
+2023-11-03 21:12:06,350 - INFO - Training Loss: 0.9958
+2023-11-03 21:12:06,883 - INFO - Saved the best model with average loss: 0.9958
+2023-11-03 21:12:07,986 - INFO - Training Loss: 1.0012
+2023-11-03 21:12:09,494 - INFO - Training Loss: 1.0016
+2023-11-03 21:12:10,726 - INFO - Training Loss: 0.9968
+2023-11-03 21:12:11,750 - INFO - Training Loss: 0.9983
+2023-11-03 21:12:13,738 - INFO - Training Loss: 0.9971
+2023-11-03 21:12:14,951 - INFO - Training Loss: 1.0023
+2023-11-03 21:12:16,337 - INFO - Training Loss: 0.9971
+2023-11-03 21:12:17,650 - INFO - Training Loss: 0.9972
+2023-11-03 21:12:18,866 - INFO - Training Loss: 0.9990
+2023-11-03 21:12:19,767 - INFO - Training Loss: 0.9952
+2023-11-03 21:12:19,793 - INFO - Saved the best model with average loss: 0.9952
+2023-11-03 21:12:21,045 - INFO - Training Loss: 0.9957
+2023-11-03 21:12:22,072 - INFO - Training Loss: 0.9997
+2023-11-03 21:12:23,247 - INFO - Training Loss: 1.0056
+2023-11-03 21:12:24,330 - INFO - Training Loss: 0.9992
+2023-11-03 21:12:25,458 - INFO - Training Loss: 1.0033
+2023-11-03 21:12:26,614 - INFO - Training Loss: 1.0027
+2023-11-03 21:12:27,932 - INFO - Training Loss: 0.9956
+2023-11-03 21:12:29,113 - INFO - Training Loss: 1.0073
+2023-11-03 21:12:30,458 - INFO - Training Loss: 1.0127
+2023-11-03 21:12:31,587 - INFO - Training Loss: 0.9953
+2023-11-03 21:12:32,607 - INFO - Training Loss: 1.0052
+2023-11-03 21:12:33,889 - INFO - Training Loss: 0.9998
+2023-11-03 21:12:35,621 - INFO - Training Loss: 1.0036
+2023-11-03 21:12:37,170 - INFO - Training Loss: 0.9989
+2023-11-03 21:12:38,444 - INFO - Training Loss: 1.0022
+2023-11-03 21:12:39,547 - INFO - Training Loss: 0.9979
+2023-11-03 21:12:40,640 - INFO - Training Loss: 0.9993
+2023-11-03 21:12:41,976 - INFO - Training Loss: 1.0019
+2023-11-03 21:12:43,363 - INFO - Training Loss: 0.9966
+2023-11-03 21:12:44,835 - INFO - Training Loss: 0.9988
+2023-11-03 21:12:46,166 - INFO - Training Loss: 1.0129
+2023-11-03 21:12:47,527 - INFO - Training Loss: 1.0146
+2023-11-03 21:12:48,477 - INFO - Training Loss: 1.0086

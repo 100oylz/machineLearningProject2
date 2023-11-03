@@ -1,4 +1,5 @@
 from _import import *
+from typing import Tuple
 
 
 def loadMatFile(filepath: str) -> dict:
@@ -84,7 +85,7 @@ class datastruct():
             newdatadict[key] = newvalue
         return newdatadict
 
-    def rawdatatonumpy(self) -> (np.ndarray, np.ndarray, np.ndarray):
+    def rawdatatonumpy(self) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         将原始数据转换为NumPy数组。
 
@@ -135,7 +136,7 @@ class datastruct():
             data = data.astype(int)
             return data, label, labelmap
         elif len(data.shape) == 3:
-            data = data.transpose((-1, -2))
+            data = data.transpose((0, 2, 1))
             datamin = np.array([np.min(data[:, :, i]) for i in range(data.shape[1])])
             datamax = np.array([np.max(data[:, :, i]) for i in range(data.shape[1])])
             datamax = datamax + eps
