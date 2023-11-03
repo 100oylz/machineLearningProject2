@@ -5,7 +5,7 @@ from transformers import PreTrainedTokenizer
 
 class PromptGenerate(nn.Module):
     def __init__(self, init_shape: tuple = (256, 1), embedding_dim: int = 2048, gru_hidden_size: int = 256,
-                 output_length: int = 64,device='cuda'):
+                 output_length: int = 64, device='cuda'):
         """
         初始化PromptGenerate模型。
 
@@ -17,7 +17,7 @@ class PromptGenerate(nn.Module):
         """
         super().__init__()
         self.init_shape = init_shape
-        self.device=device
+        self.device = device
         temp = torch.randint(0, init_shape[0], init_shape, dtype=torch.long)
         # 注册V，是一个dtype为整形的矩阵，用来计算prompt
         self.register_buffer('V', temp)
@@ -26,7 +26,7 @@ class PromptGenerate(nn.Module):
 
         self.emb = nn.Embedding(init_shape[0], embedding_dim)
         self.gru = nn.GRU(embedding_dim, gru_hidden_size)
-        self.linear = nn.Linear(gru_hidden_size * init_shape[0]*init_shape[1], output_length)
+        self.linear = nn.Linear(gru_hidden_size * init_shape[0] * init_shape[1], output_length)
         self.relu = nn.ReLU()
         self.embLength = gru_hidden_size
         self.linear1 = nn.Linear(init_shape[0] * init_shape[1], 2)
@@ -59,26 +59,26 @@ class PromptGenerate(nn.Module):
         scaled_integers = scaled_integers.clamp(0, tokenizer_length - 1).long().to(self.device)
         positem = self.linear1(self.P.view(-1))
         # 建立整数映射
-        maskpos=positem[0]
-        slicepos=positem[1]
-        maskpos=int(abs(maskpos.item())*datalength)%datalength
-        slicepos=int(abs(slicepos.item()*(datalength+1)))%(datalength+1)
-        
-                
-        masktokenid=tokenizer.mask_token_id
-        starttokenid=tokenizer.cls_token_id
-        endtokenid=tokenizer.sep_token_id
-        
-        start_tensor=torch.Tensor([starttokenid]).to(self.device)
-        end_tensor=torch.Tensor([endtokenid]).to(self.device)
-        mask_tensor=torch.Tensor([masktokenid]).to(self.device)
+        maskpos = positem[0]
+        slicepos = positem[1]
 
-        scaled_integers= torch.cat((start_tensor,scaled_integers[:maskpos],mask_tensor, scaled_integers[maskpos:],end_tensor))
-        
-        beforePrompt=scaled_integers[:slicepos]
-        afterPrompt=scaled_integers[slicepos:]
+        maskpos = int(abs(maskpos.item()) * datalength) % datalength
+        slicepos = int(abs(slicepos.item() * (datalength + 1))) % (datalength + 1)
 
+        masktokenid = tokenizer.mask_token_id
+        starttokenid = tokenizer.cls_token_id
+        endtokenid = tokenizer.sep_token_id
 
-        return beforePrompt,afterPrompt,maskpos
+        start_tensor = torch.Tensor([starttokenid]).to(self.device)
+        end_tensor = torch.Tensor([endtokenid]).to(self.device)
+        mask_tensor = torch.Tensor([masktokenid]).to(self.device)
 
+        scaled_integers = torch.cat(
+            (start_tensor, scaled_integers[:maskpos], mask_tensor, scaled_integers[maskpos:], end_tensor))
 
+        beforePrompt = scaled_integers[:slicepos + 1]
+        afterPrompt = scaled_integers[slicepos + 1:]
+
+        maskpos = maskpos + 1 + datalength if maskpos >= slicepos else maskpos + 1
+
+        return beforePrompt, afterPrompt, maskpos
