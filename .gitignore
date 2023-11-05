@@ -1,3 +1,7 @@
 *.gz
 
 *.tar.gz
+
+*.sh
+
+*.bat

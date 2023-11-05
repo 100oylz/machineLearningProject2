@@ -1,14 +1,16 @@
+import time
+
 import torch.utils.data
 import LLM
 import config
 import customdataset
-from dataclasses import dataclass
+
 from config import *
 import utils
 from PromptGenerate import PromptGenerate
 from maskInfo import maskmodel
 from datastruct import split_train_valid_test
-
+from dataclasses import dataclass
 from utils import logConfig
 
 
@@ -18,30 +20,39 @@ class dim3Dict():
     last_item: int
 
 
-def ensembleLearning(output: torch.Tensor, label: torch.Tensor, labelmap):
-    itemdict = {}
-    for i in range(len(labelmap)):
-        itemdict[i] = dim3Dict(num=0, last_item=-1)
-    for i in range(output.shape[0]):
-        item = output[i, :]
-        # print(item.shape)
-        _, predicted = torch.max(item, dim=0)
-        itemdict[predicted.item()].num += 1
-        itemdict[predicted.item()].last_item = i
+def ensembleLearning(output: torch.Tensor, label: torch.Tensor, labelmap, datalength):
+    output = output.view(-1, datalength, len(labelmap))
+    itemlist = []
+    sortedkeyslist = []
+    for j in range(output.shape[0]):
+        itemdict = {}
+        for i in range(len(labelmap)):
+            itemdict[i] = dim3Dict(num=0, last_item=-1)
+        for i in range(output.shape[1]):
+            # print(output.shape)
+            item = output[j, i, :]
+            # print(item.shape)
+            _, predicted = torch.max(item, dim=0)
 
-    # 找到num最大的几个类别的键
-    max_num = max(itemdict.values(), key=lambda x: x.num).num
-    max_num_keys = [key for key, value in itemdict.items() if value.num == max_num]
-    sorted_keys = sorted(max_num_keys, key=lambda x: itemdict[x].last_item, reverse=True)
+            itemdict[predicted.item()].num += 1
+            itemdict[predicted.item()].last_item = i
 
-    eps = 1e-5
+        # 找到num最大的几个类别的键
+        max_num = max(itemdict.values(), key=lambda x: x.num).num
+        max_num_keys = [key for key, value in itemdict.items() if value.num == max_num]
+        sorted_keys = max(max_num_keys, key=lambda x: itemdict[x].last_item)
 
-    ensembleOutput = torch.tensor(
-        [itemdict[i].num / output.shape[0] if i != sorted_keys[0] else itemdict[i].num / output.shape[0] + eps for i in
-         range(output.shape[1])],
-        requires_grad=True).to(label.device)
+        eps = 1e-5
 
-    return ensembleOutput, torch.Tensor([sorted_keys[0]]).to(label.device)
+        ensembleOutput = torch.tensor(
+            [itemdict[i].num / output.shape[0] if i != sorted_keys else itemdict[i].num / output.shape[0] + eps for i
+             in
+             range(len(labelmap))],
+            requires_grad=True).to(label.device)
+        sortedkeyslist.append(sorted_keys)
+        itemlist.append(ensembleOutput)
+    return torch.stack(itemlist), torch.Tensor(sortedkeyslist).to(
+        label.device)
 
 
 def batchProcess(config, correct_predictions, criterion, epoch_loss, maskModel, model, optimizer, promptModel,
@@ -68,10 +79,17 @@ def batchProcess(config, correct_predictions, criterion, epoch_loss, maskModel, 
         Tuple[int, float, int]: 更新后的正确预测数量、epoch损失和样本总数。
     """
     for batch in dataloader:
+        if(train):
+            optimizer.zero_grad()
+        torch.cuda.empty_cache()
+        time.sleep(0.5)
+        # print(torch.cuda.memory_summary(device=None, abbreviated=False))
+
         data = batch['data']
         label = batch['label']
+        datalength = data.shape[1]
         if (dim == 3):
-            data = torch.squeeze(data, dim=0)
+            data = data.view(data.shape[0] * data.shape[1], data.shape[2])
         elif (dim == 2):
             pass
         else:
@@ -82,13 +100,11 @@ def batchProcess(config, correct_predictions, criterion, epoch_loss, maskModel, 
         label = label.to(config.device)
         with torch.no_grad():
             output = model(data)
-
-        last_hidden_state, _ = output.to_tuple()
+        last_hidden_state = output.last_hidden_state
         maskItem = last_hidden_state[:, maskpos, :]
         out = maskModel(maskItem)
-
         if (dim == 3):
-            ensembleoutput, predicted = ensembleLearning(out, label, labelmap)
+            ensembleoutput, predicted = ensembleLearning(out, label, labelmap, datalength)
             # print(ensembleoutput.shape)
             ensembleoutput = ensembleoutput.view(config.batch_size, -1)
             loss = criterion(ensembleoutput, label.long())
@@ -100,16 +116,16 @@ def batchProcess(config, correct_predictions, criterion, epoch_loss, maskModel, 
             raise NotImplementedError("dim!=2 And dim!=3 Not Implement!")
         # exit(0)
         if train:
-            optimizer.zero_grad()
+            # optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-        # print(loss)
         # 计算准确率
         correct_predictions += (predicted == label).sum().item()
         total_samples += label.size(0)
-
         # 累积epoch损失
         epoch_loss += loss.item()
+        del data, output, last_hidden_state, maskItem, label, loss, predicted, batch
+
     return correct_predictions, epoch_loss, total_samples
 
 
