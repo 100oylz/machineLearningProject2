@@ -137,17 +137,17 @@ class datastruct():
             return data, label, labelmap
         elif len(data.shape) == 3:
             data = data.transpose((0, 2, 1))
-            datamin = np.array([np.min(data[:, :, i]) for i in range(data.shape[1])])
-            datamax = np.array([np.max(data[:, :, i]) for i in range(data.shape[1])])
+            datamin = np.array([np.min(data[:, :, i]) for i in range(data.shape[2])])
+            datamax = np.array([np.max(data[:, :, i]) for i in range(data.shape[2])])
             datamax = datamax + eps
             assert datamin.shape[0] == data.shape[2]
             assert datamax.shape[0] == data.shape[2]
 
-            num = data.shape[1]
+            num = data.shape[2]
             if not self.slices:
                 self.__generateslice(datamax, datamin, num, slicenum)
-            for i in range(data.shape[1]):
-                data[:, :, i] = np.digitize(data[:, :, i], self.slices[i, :])
+            for i in range(data.shape[2]):
+                data[:, i, :] = np.digitize(data[:, i, :], self.slices[i, :])
             data: np.ndarray = data.astype(int)
             return data, label, labelmap
         else:

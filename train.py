@@ -2,7 +2,7 @@ import torch.utils.data
 import LLM
 import config
 import customdataset
-
+from dataclasses import dataclass
 from config import *
 import utils
 from PromptGenerate import PromptGenerate
@@ -12,8 +12,40 @@ from datastruct import split_train_valid_test
 from utils import logConfig
 
 
+@dataclass
+class dim3Dict():
+    num: int
+    last_item: int
+
+
+def ensembleLearning(output: torch.Tensor, label: torch.Tensor, labelmap):
+    itemdict = {}
+    for i in range(len(labelmap)):
+        itemdict[i] = dim3Dict(num=0, last_item=-1)
+    for i in range(output.shape[0]):
+        item = output[i, :]
+        # print(item.shape)
+        _, predicted = torch.max(item, dim=0)
+        itemdict[predicted.item()].num += 1
+        itemdict[predicted.item()].last_item = i
+
+    # 找到num最大的几个类别的键
+    max_num = max(itemdict.values(), key=lambda x: x.num).num
+    max_num_keys = [key for key, value in itemdict.items() if value.num == max_num]
+    sorted_keys = sorted(max_num_keys, key=lambda x: itemdict[x].last_item, reverse=True)
+
+    eps = 1e-5
+
+    ensembleOutput = torch.tensor(
+        [itemdict[i].num / output.shape[0] if i != sorted_keys[0] else itemdict[i].num / output.shape[0] + eps for i in
+         range(output.shape[1])],
+        requires_grad=True).to(label.device)
+
+    return ensembleOutput, torch.Tensor([sorted_keys[0]]).to(label.device)
+
+
 def batchProcess(config, correct_predictions, criterion, epoch_loss, maskModel, model, optimizer, promptModel,
-                 tokenizer, tokens_num, total_samples, dataloader, train: bool):
+                 tokenizer, tokens_num, total_samples, dataloader, train: bool, dim: int, labelmap: List[int]):
     """
     进行批处理。
 
@@ -38,6 +70,12 @@ def batchProcess(config, correct_predictions, criterion, epoch_loss, maskModel, 
     for batch in dataloader:
         data = batch['data']
         label = batch['label']
+        if (dim == 3):
+            data = torch.squeeze(data, dim=0)
+        elif (dim == 2):
+            pass
+        else:
+            raise NotImplementedError("dim!=2 And dim!=3 Not Implement!")
         data, maskpos = addDataAndMaskToPrompt(
             data, promptModel, tokenizer, tokens_num)
         data = data.to(config.device)
@@ -49,15 +87,24 @@ def batchProcess(config, correct_predictions, criterion, epoch_loss, maskModel, 
         maskItem = last_hidden_state[:, maskpos, :]
         out = maskModel(maskItem)
 
-        loss = criterion(out, label.long())
-
+        if (dim == 3):
+            ensembleoutput, predicted = ensembleLearning(out, label, labelmap)
+            # print(ensembleoutput.shape)
+            ensembleoutput = ensembleoutput.view(config.batch_size, -1)
+            loss = criterion(ensembleoutput, label.long())
+        elif (dim == 2):
+            # print(out.shape)
+            loss = criterion(out, label.long())
+            _, predicted = torch.max(out, 1)
+        else:
+            raise NotImplementedError("dim!=2 And dim!=3 Not Implement!")
+        # exit(0)
         if train:
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-
+        # print(loss)
         # 计算准确率
-        _, predicted = torch.max(out, 1)
         correct_predictions += (predicted == label).sum().item()
         total_samples += label.size(0)
 
@@ -200,8 +247,10 @@ def train(dataset: datastruct, config: trainConfig):
             total_valid_samples = 0
             correct_predictions, epoch_loss, total_samples = batchProcess(config, correct_predictions, criterion,
                                                                           epoch_loss, maskModel, model, optimizer,
-                                                                          promptModel, tokenizer, tokens_num, total_samples,
-                                                                          traindataloader, train=True)
+                                                                          promptModel, tokenizer, tokens_num,
+                                                                          total_samples,
+                                                                          traindataloader, train=True, dim=config.dim,
+                                                                          labelmap=labelmap)
 
             promptModel.eval()
             maskModel.eval()
@@ -213,8 +262,12 @@ def train(dataset: datastruct, config: trainConfig):
                                                                                             model,
                                                                                             optimizer,
                                                                                             promptModel, tokenizer,
-                                                                                            tokens_num, total_valid_samples,
-                                                                                            validdataloader, train=False)
+                                                                                            tokens_num,
+                                                                                            total_valid_samples,
+                                                                                            validdataloader,
+                                                                                            train=False,
+                                                                                            dim=config.dim,
+                                                                                            labelmap=labelmap)
 
             promptModel.train()
             maskModel.train()
@@ -252,4 +305,8 @@ def train(dataset: datastruct, config: trainConfig):
 
 if __name__ == '__main__':
     # train(config.ADNI, ADNIconfig)
-    train(config.PPMI, PPMIconfig)
+    # train(config.PPMI, PPMIconfig)
+    train(config.ADNI_fMRI, config.ADNI_fMRIconfig)
+    train(config.OCD_fMRI, config.OCD_fMRIconfig)
+    train(config.FTD_fMRI, config.FTD_fMRIconfig)
+    # ensembleLearning(torch.Tensor([1, 1]), torch.Tensor([1]), [0, 1, 2])
