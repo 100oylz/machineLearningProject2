@@ -24,18 +24,18 @@ def ensembleLearning(output: torch.Tensor, label: torch.Tensor, labelmap, datale
     output = output.view(-1, datalength, len(labelmap))
     itemlist = []
     sortedkeyslist = []
-    for j in range(output.shape[0]):
+    for batchidx in range(output.shape[0]):
         itemdict = {}
-        for i in range(len(labelmap)):
-            itemdict[i] = dim3Dict(num=0, last_item=-1)
-        for i in range(output.shape[1]):
+        for labelidx in range(len(labelmap)):
+            itemdict[labelidx] = dim3Dict(num=0, last_item=-1)
+        for ensembleidx in range(output.shape[1]):
             # print(output.shape)
-            item = output[j, i, :]
+            item = output[batchidx, ensembleidx, :]
             # print(item.shape)
             _, predicted = torch.max(item, dim=0)
 
             itemdict[predicted.item()].num += 1
-            itemdict[predicted.item()].last_item = i
+            itemdict[predicted.item()].last_item = ensembleidx
 
         # 找到num最大的几个类别的键
         max_num = max(itemdict.values(), key=lambda x: x.num).num
@@ -44,11 +44,9 @@ def ensembleLearning(output: torch.Tensor, label: torch.Tensor, labelmap, datale
 
         eps = 1e-5
 
-        ensembleOutput = torch.tensor(
-            [itemdict[i].num / output.shape[0] if i != sorted_keys else itemdict[i].num / output.shape[0] + eps for i
-             in
-             range(len(labelmap))],
-            requires_grad=True).to(label.device)
+        ensembleOutput = torch.tensor([itemdict[k].num / output.shape[0] * torch.mean(
+            output[batchidx, k, :]) if k != sorted_keys else itemdict[k].num / output.shape[0] + eps for k in
+                                       range(len(labelmap))], requires_grad=True).to(label.device)
         sortedkeyslist.append(sorted_keys)
         itemlist.append(ensembleOutput)
     return torch.stack(itemlist), torch.Tensor(sortedkeyslist).to(
@@ -79,7 +77,7 @@ def batchProcess(config, correct_predictions, criterion, epoch_loss, maskModel, 
         Tuple[int, float, int]: 更新后的正确预测数量、epoch损失和样本总数。
     """
     for batch in dataloader:
-        if(train):
+        if (train):
             optimizer.zero_grad()
         torch.cuda.empty_cache()
         time.sleep(0.5)
@@ -106,7 +104,7 @@ def batchProcess(config, correct_predictions, criterion, epoch_loss, maskModel, 
         if (dim == 3):
             ensembleoutput, predicted = ensembleLearning(out, label, labelmap, datalength)
             # print(ensembleoutput.shape)
-            ensembleoutput = ensembleoutput.view(config.batch_size, -1)
+            ensembleoutput = ensembleoutput.view(-1, len(labelmap))
             loss = criterion(ensembleoutput, label.long())
         elif (dim == 2):
             # print(out.shape)
