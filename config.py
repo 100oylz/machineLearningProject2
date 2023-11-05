@@ -15,7 +15,7 @@ LABEL_TOKEN_FORMAT = '{}'
 LABEL_WORD_MAP = ['best', 'good', 'normal', 'bad', 'worst']
 
 DEFAULTMILESTONES = [10, 20]
-DEFAULTCHANNELS = [90, 128, 256, 512, 256, 128, 64, 1]
+DEFAULTCHANNELS = [2048, 1024, 512]
 
 
 @dataclass
@@ -41,6 +41,24 @@ class trainConfig():
     dim: int = 2
 
 
+@dataclass
+class trainVAEConfig():
+    name: str
+    features: List[int]
+    out_feature: int = 256
+    batch_size: int = 16
+    lr: float = 1e-4
+    weight_decay: float = 1e-4
+    num_epochs: int = 200
+    seed: int = 24
+    dropout: float = 0.2
+    device: str = 'cuda'
+    hidden_features: Tuple[int] = (128, 64)
+    random_state: Tuple[int] = (0, 1, 2, 3, 4)
+    enable_num: int = 50
+    min_item: float = 0.8
+
+
 ADNIconfig = trainConfig('ADNI', milestones=DEFAULTMILESTONES)
 PPMIconfig = trainConfig('PPMI', milestones=DEFAULTMILESTONES, batch_size=16, dropout=0.3)
 ADNI_fMRIconfig = trainConfig('ADNI_fMRI', milestones=DEFAULTMILESTONES, dim=3, batch_size=1)
@@ -52,3 +70,7 @@ PPMI = datastruct('PPMI', 'PPMI')
 ADNI_fMRI = datastruct('ADNI_fMRI', 'ADNI_90_120_fMRI')
 OCD_fMRI = datastruct('OCD_fMRI', 'OCD_90_200_fMRI')
 FTD_fMRI = datastruct('FTD_fMRI', 'FTD_90_200_fMRI')
+
+ADNI_fMRI_vaeconfig = trainVAEConfig('ADNI_fMRI', features=DEFAULTCHANNELS, num_epochs=1000)
+OCD_fMRI_vaeconfig = trainVAEConfig('OCD_fMRI', features=DEFAULTCHANNELS, num_epochs=1000, min_item=1.0)
+FTD_fMRI_vaeconfig = trainVAEConfig('FTD_fMRI', features=DEFAULTCHANNELS, num_epochs=1000, min_item=1.0)
