@@ -1,0 +1,9 @@
+*.gz
+
+*.tar.gz
+
+*.sh
+
+*.bat
+
+checkpoint/AutoEncoder/*
