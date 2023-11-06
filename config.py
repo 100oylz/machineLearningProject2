@@ -39,6 +39,7 @@ class trainConfig():
     random_state: Tuple[int] = (0, 1, 2, 3, 4)
     saved_by_valid_loss: bool = True
     dim: int = 2
+    needEncode: bool = False
 
 
 @dataclass
@@ -61,9 +62,12 @@ class trainVAEConfig():
 
 ADNIconfig = trainConfig('ADNI', milestones=DEFAULTMILESTONES)
 PPMIconfig = trainConfig('PPMI', milestones=DEFAULTMILESTONES, batch_size=16, dropout=0.3)
-ADNI_fMRIconfig = trainConfig('ADNI_fMRI', milestones=DEFAULTMILESTONES, dim=3, batch_size=1)
-OCD_fMRIconfig = trainConfig('OCD_fMRI', milestones=DEFAULTMILESTONES, dim=3, batch_size=1)
-FTD_fMRIconfig = trainConfig('FTD_fMRI', milestones=DEFAULTMILESTONES, dim=3, batch_size=1)
+ADNI_fMRIconfig = trainConfig('ADNI_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=16, needEncode=True,
+                              dropout=0.3)
+OCD_fMRIconfig = trainConfig('OCD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=16, needEncode=True,
+                             dropout=0.3)
+FTD_fMRIconfig = trainConfig('FTD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=16, needEncode=True,
+                             dropout=0.3)
 
 ADNI = datastruct('ADNI', 'ADNI')
 PPMI = datastruct('PPMI', 'PPMI')

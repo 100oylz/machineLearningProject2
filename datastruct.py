@@ -1,3 +1,5 @@
+import numpy as np
+
 from _import import *
 from typing import Tuple
 
@@ -168,3 +170,16 @@ class datastruct():
             self.slices.append(label_slice)
         self.slices = np.array(self.slices)
         assert self.slices.shape == (num, slicenum)
+
+    def repairRawdata(self, data: np.ndarray, label: np.ndarray, labelmap: np.ndarray):
+        rawdata = {}
+        unique_labels = np.unique(label)
+        for u_label in unique_labels:
+            label_data = data[label == u_label]
+            label_name = labelmap[u_label]
+            if label_name not in rawdata:
+                rawdata[label_name]=label_data.tolist()
+            else:
+                rawdata[label_name].extend(label_data.tolist())
+        self.rawdata=rawdata
+        self.rawdata=self.__normalize()

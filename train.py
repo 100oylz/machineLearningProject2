@@ -1,5 +1,6 @@
 import time
 
+import numpy as np
 import torch.utils.data
 import LLM
 import config
@@ -12,6 +13,7 @@ from maskInfo import maskmodel
 from datastruct import split_train_valid_test
 from dataclasses import dataclass
 from utils import logConfig
+from AutoEncoder import VAE, VAEdataset
 
 
 @dataclass
@@ -54,7 +56,8 @@ def ensembleLearning(output: torch.Tensor, label: torch.Tensor, labelmap, datale
 
 
 def batchProcess(config, correct_predictions, criterion, epoch_loss, maskModel, model, optimizer, promptModel,
-                 tokenizer, tokens_num, total_samples, dataloader, train: bool, dim: int, labelmap: List[int]):
+                 tokenizer, tokens_num, total_samples, dataloader, train: bool, dim: int, labelmap: List[int],
+                 ):
     """
     进行批处理。
 
@@ -167,7 +170,7 @@ def addDataAndMaskToPrompt(data, promptModel, tokenizer, tokens_num):
     for item in data:
         encoded_item = encode_data_with_special_symbols(item, tokenizer)
         encoded_data.append(encoded_item)
-    datalength = len(encoded_item) + trainConfig.output_length
+    datalength = trainConfig.output_length
 
     beforePrompt, afterPrompt, maskpos = promptModel(
         tokens_num, datalength, tokenizer)
@@ -215,6 +218,26 @@ def train(dataset: datastruct, config: trainConfig):
         config (trainConfig): 训练配置。
     """
     utils.setup_seed(config.seed)
+    if config.needEncode:
+        data, label, labelmap = dataset.rawdatatonumpy()
+
+        vaedataset = VAEdataset(data)
+        model = torch.load(f'checkpoint/AutoEncoder/{config.name}.pt')
+        model.to(config.device)
+        model.eval()
+        dataloader = torch.utils.data.dataloader.DataLoader(vaedataset, batch_size=config.batch_size)
+        datalist = []
+        for batch in dataloader:
+            batch = batch.to(config.device)
+            batch = batch.view(batch.shape[0], 1, batch.shape[1], batch.shape[2])
+            mu, logvar = model.encode(batch)
+            out: torch.Tensor = model.reparameterize(mu, logvar)
+            datalist.append(out.cpu().detach().numpy())
+        # print(datalist)
+        npdata = np.concatenate(datalist, axis=0)
+        dataset.repairRawdata(npdata, label, labelmap)
+        del model, dataloader, datalist, batch, vaedataset, data, label, labelmap
+
     data, label, labelmap = dataset.discrete(slicenum=trainConfig.slice_num)
     for randomstate in config.random_state:
 
