@@ -64,10 +64,10 @@ ADNIconfig = trainConfig('ADNI', milestones=DEFAULTMILESTONES)
 PPMIconfig = trainConfig('PPMI', milestones=DEFAULTMILESTONES, batch_size=16, dropout=0.3)
 ADNI_fMRIconfig = trainConfig('ADNI_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=16, needEncode=True,
                               dropout=0.3)
-OCD_fMRIconfig = trainConfig('OCD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=16, needEncode=True,
-                             dropout=0.3)
+OCD_fMRIconfig = trainConfig('OCD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=15, needEncode=True,
+                             dropout=0.5)
 FTD_fMRIconfig = trainConfig('FTD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=16, needEncode=True,
-                             dropout=0.3)
+                             dropout=0.5)
 
 ADNI = datastruct('ADNI', 'ADNI')
 PPMI = datastruct('PPMI', 'PPMI')

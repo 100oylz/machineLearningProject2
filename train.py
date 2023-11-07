@@ -343,7 +343,7 @@ def train(dataset: datastruct, config: trainConfig):
 if __name__ == '__main__':
     # train(config.ADNI, ADNIconfig)
     # train(config.PPMI, PPMIconfig)
-    train(config.ADNI_fMRI, config.ADNI_fMRIconfig)
-    train(config.OCD_fMRI, config.OCD_fMRIconfig)
+    # train(config.ADNI_fMRI, config.ADNI_fMRIconfig)
+    # train(config.OCD_fMRI, config.OCD_fMRIconfig)
     train(config.FTD_fMRI, config.FTD_fMRIconfig)
     # ensembleLearning(torch.Tensor([1, 1]), torch.Tensor([1]), [0, 1, 2])

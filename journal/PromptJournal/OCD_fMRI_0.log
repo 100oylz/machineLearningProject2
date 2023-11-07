@@ -1,0 +1,4 @@
+2023-11-06 20:29:05,414 - INFO - Epoch [1/50], Train Loss: 1.0809, Train Accuracy: 51.02%, Valid Loss: 0.8516, Valid Accuracy: 75.00%
+2023-11-06 20:29:06,085 - INFO - Epoch [1/50], Train Loss: 1.0809, Train Accuracy: 51.02%, Valid Loss: 0.8516, Valid Accuracy: 75.00% Saved!
+2023-11-06 20:29:23,212 - INFO - Epoch [2/50], Train Loss: 1.2338, Train Accuracy: 40.82%, Valid Loss: 0.7303, Valid Accuracy: 31.25%
+2023-11-06 20:29:23,683 - INFO - Epoch [2/50], Train Loss: 1.2338, Train Accuracy: 40.82%, Valid Loss: 0.7303, Valid Accuracy: 31.25% Saved!
