@@ -1,14 +1,25 @@
+# 当前路径包
+import LLM
+# 第三方库
 import torch
 import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-from typing import Tuple, List
+from typing import Tuple
 from transformers import PreTrainedTokenizer
 
-import LLM
 
+class PromptGenerateDev(nn.Module):
+    """
+    生成模型的类，用于生成prompt和mask。
 
-class promptGenerateDev(nn.Module):
+    Args:
+        init_shape (Tuple[int, int]): 初始化buffer的形状。
+        embedding_dim (int): 嵌入维度。
+        gru_hidden_state (int): GRU隐藏状态的维度。
+        promptlength (int): 生成的prompt的长度。
+        device (str | torch.device): 指定设备（'cpu' 或 torch.device 对象）。
+        prompt_num (int): 生成的prompt的数量。
+    """
+
     def __init__(self, init_shape: Tuple[int, int], embedding_dim: int, gru_hidden_state: int, promptlength: int,
                  device: str | torch.device, prompt_num: int):
         super().__init__()
@@ -32,19 +43,31 @@ class promptGenerateDev(nn.Module):
         self.to(self.device)
 
     def forward(self, data_length: int, tokenizer: PreTrainedTokenizer, data: torch.Tensor):
+        """
+        前向传播函数，用于生成prompt和mask。
+
+        Args:
+            data_length (int): 输入数据的长度。
+            tokenizer (PreTrainedTokenizer): 分词器对象。
+            data (torch.Tensor): 输入数据张量。
+
+        Returns:
+            torch.Tensor: 生成的prompt张量。
+            torch.Tensor: 生成的mask张量。
+        """
         assert data.dtype == torch.long
         out = self.emb(self.prompt_init)
         out, _ = self.gru(out)
         out = self.relu(out)
         out = self.generate_prompt(out.view(-1))
         prompt = out.view(self.prompt_num, self.promptlength)
-
+        # 标准化确保在0-1区间
         max_vals, _ = torch.max(prompt, dim=1, keepdim=True)
         min_vals, _ = torch.min(prompt, dim=1, keepdim=True)
-
         slice = max_vals - min_vals
         slice[slice == 0] = 1e-18
         normalized_out = (prompt - min_vals) / slice
+        # 进行映射
         prompt = normalized_out * tokenizer.vocab_size
         prompt = prompt.clamp(0, tokenizer.vocab_size - 1).long().to(self.device)
         del slice, normalized_out, out, min_vals, max_vals
@@ -99,6 +122,25 @@ class promptGenerateDev(nn.Module):
     def add_mask_slice_data_toPrompt(self, cls_tensor, data, data_length, mask, mask_tensor, prompt, sep_tensor, slice,
                                      pad_tensor,
                                      add_cls: bool = True):
+        """
+        将mask、data等信息加入到prompt中，并返回生成的mask和prompt。
+
+        Args:
+            cls_tensor (torch.Tensor): CLS标记的张量。
+            data (torch.Tensor): 输入数据张量。
+            data_length (int): 输入数据的长度。
+            mask (torch.Tensor): mask位置的张量。
+            mask_tensor (torch.Tensor): MASK标记的张量。
+            prompt (torch.Tensor): 当前的prompt张量。
+            sep_tensor (torch.Tensor): SEP标记的张量。
+            slice (torch.Tensor): 切分位置的张量。
+            pad_tensor (torch.Tensor): PAD标记的张量。
+            add_cls (bool, optional): 是否加入CLS标记。默认为True。
+
+        Returns:
+            torch.Tensor: 生成的mask张量。
+            torch.Tensor: 生成的prompt张量。
+        """
         prompt = prompt.view(-1)
         maskpos = mask.item()
         slicepos = slice.item()
@@ -130,7 +172,7 @@ class promptGenerateDev(nn.Module):
 
 if __name__ == '__main__':
     llm, tokenizer = LLM.getLLM()
-    promptmodeldev = promptGenerateDev((16, 16), 256, 64, 64, 'cuda', 16)
+    promptmodeldev = PromptGenerateDev((16, 16), 256, 64, 64, 'cuda', 16)
     data = torch.randint(0, 10, (16, 16, 64)).to('cuda')
     prompt, mask = promptmodeldev(64, tokenizer, data)
     print(prompt)
