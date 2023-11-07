@@ -1,8 +1,9 @@
 import logging
 
 from colorlog import ColoredFormatter
-
-from _import import *
+import torch
+import numpy as np
+import random
 from config import ADNI
 
 from customdataset import CustomDataset
@@ -16,7 +17,7 @@ def setup_seed(seed) -> None:
     torch.backends.cudnn.deterministic = True
 
 
-def logConfig(config,randomstate):
+def logConfig(config, randomstate):
     """
     配置日志记录。
 
@@ -66,6 +67,7 @@ def logConfig(config,randomstate):
     logger.addHandler(file_handler)
 
     return logger
+
 
 def logAutoEncoderConfig(config):
     """
@@ -119,7 +121,6 @@ def logAutoEncoderConfig(config):
     return logger
 
 
-
 if __name__ == '__main__':
     data, label, labelmap = ADNI.discrete()
     print(type(data[0]))
@@ -133,5 +134,3 @@ if __name__ == '__main__':
         print(type(batch['label']))
         print(batch['data'].shape)
         print(batch['label'].shape)
-
-

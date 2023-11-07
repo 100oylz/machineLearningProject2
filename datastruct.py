@@ -1,6 +1,7 @@
 import numpy as np
 
-from _import import *
+from sklearn.model_selection import train_test_split
+import scipy.io as IO
 from typing import Tuple
 
 
@@ -14,6 +15,7 @@ def loadMatFile(filepath: str) -> dict:
     返回：
         dict：包含加载数据的字典。
     """
+
     data = IO.loadmat(filepath)
     data_dict = {}
     for key, value in data.items():

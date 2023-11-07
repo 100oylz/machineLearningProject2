@@ -1,6 +1,3 @@
-import time
-
-import numpy as np
 import torch.utils.data
 import LLM
 import config
@@ -11,53 +8,12 @@ import utils
 from PromptGenerate import PromptGenerate
 from maskInfo import maskmodel
 from datastruct import split_train_valid_test
-from dataclasses import dataclass
+
 from utils import logConfig
-from AutoEncoder import VAE, VAEdataset
-
-
-@dataclass
-class dim3Dict():
-    num: int
-    last_item: int
-
-
-def ensembleLearning(output: torch.Tensor, label: torch.Tensor, labelmap, datalength):
-    output = output.view(-1, datalength, len(labelmap))
-    itemlist = []
-    sortedkeyslist = []
-    for batchidx in range(output.shape[0]):
-        itemdict = {}
-        for labelidx in range(len(labelmap)):
-            itemdict[labelidx] = dim3Dict(num=0, last_item=-1)
-        for ensembleidx in range(output.shape[1]):
-            # print(output.shape)
-            item = output[batchidx, ensembleidx, :]
-            # print(item.shape)
-            _, predicted = torch.max(item, dim=0)
-
-            itemdict[predicted.item()].num += 1
-            itemdict[predicted.item()].last_item = ensembleidx
-
-        # 找到num最大的几个类别的键
-        max_num = max(itemdict.values(), key=lambda x: x.num).num
-        max_num_keys = [key for key, value in itemdict.items() if value.num == max_num]
-        sorted_keys = max(max_num_keys, key=lambda x: itemdict[x].last_item)
-
-        eps = 1e-5
-
-        ensembleOutput = torch.tensor([itemdict[k].num / output.shape[0] * torch.mean(
-            output[batchidx, k, :]) if k != sorted_keys else itemdict[k].num / output.shape[0] + eps for k in
-                                       range(len(labelmap))], requires_grad=True).to(label.device)
-        sortedkeyslist.append(sorted_keys)
-        itemlist.append(ensembleOutput)
-    return torch.stack(itemlist), torch.Tensor(sortedkeyslist).to(
-        label.device)
 
 
 def batchProcess(config, correct_predictions, criterion, epoch_loss, maskModel, model, optimizer, promptModel,
-                 tokenizer, tokens_num, total_samples, dataloader, train: bool, dim: int, labelmap: List[int],
-                 ):
+                 tokenizer, tokens_num, total_samples, dataloader, train: bool):
     """
     进行批处理。
 
@@ -80,53 +36,32 @@ def batchProcess(config, correct_predictions, criterion, epoch_loss, maskModel, 
         Tuple[int, float, int]: 更新后的正确预测数量、epoch损失和样本总数。
     """
     for batch in dataloader:
-        if (train):
-            optimizer.zero_grad()
-        torch.cuda.empty_cache()
-        time.sleep(0.5)
-        # print(torch.cuda.memory_summary(device=None, abbreviated=False))
-
         data = batch['data']
         label = batch['label']
-        datalength = data.shape[1]
-        if (dim == 3):
-            data = data.view(data.shape[0] * data.shape[1], data.shape[2])
-        elif (dim == 2):
-            pass
-        else:
-            raise NotImplementedError("dim!=2 And dim!=3 Not Implement!")
-        data, maskpos = addDataAndMaskToPrompt(
-            data, promptModel, tokenizer, tokens_num)
+        data, maskpos = addDataAndMaskToPrompt(data, promptModel, tokenizer, tokens_num)
         data = data.to(config.device)
         label = label.to(config.device)
         with torch.no_grad():
             output = model(data)
-        last_hidden_state = output.last_hidden_state
+
+        last_hidden_state, _ = output.to_tuple()
         maskItem = last_hidden_state[:, maskpos, :]
         out = maskModel(maskItem)
-        if (dim == 3):
-            ensembleoutput, predicted = ensembleLearning(out, label, labelmap, datalength)
-            # print(ensembleoutput.shape)
-            ensembleoutput = ensembleoutput.view(-1, len(labelmap))
-            loss = criterion(ensembleoutput, label.long())
-        elif (dim == 2):
-            # print(out.shape)
-            loss = criterion(out, label.long())
-            _, predicted = torch.max(out, 1)
-        else:
-            raise NotImplementedError("dim!=2 And dim!=3 Not Implement!")
-        # exit(0)
+
+        loss = criterion(out, label.long())
+
         if train:
-            # optimizer.zero_grad()
+            optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+
         # 计算准确率
+        _, predicted = torch.max(out, 1)
         correct_predictions += (predicted == label).sum().item()
         total_samples += label.size(0)
+
         # 累积epoch损失
         epoch_loss += loss.item()
-        del data, output, last_hidden_state, maskItem, label, loss, predicted, batch
-
     return correct_predictions, epoch_loss, total_samples
 
 
@@ -170,17 +105,16 @@ def addDataAndMaskToPrompt(data, promptModel, tokenizer, tokens_num):
     for item in data:
         encoded_item = encode_data_with_special_symbols(item, tokenizer)
         encoded_data.append(encoded_item)
-    datalength = trainConfig.output_length
+    datalength = len(encoded_item) + trainConfig.output_length
 
-    beforePrompt, afterPrompt, maskpos = promptModel(
-        tokens_num, datalength, tokenizer)
+    beforePrompt,afterPrompt,maskpos = promptModel(tokens_num, datalength, tokenizer)
 
-    batch_size = len(encoded_data)
-    beforePrompt = beforePrompt.expand(batch_size, -1)
-    afterPrompt = afterPrompt.expand(batch_size, -1)
-    data = torch.Tensor(encoded_data).to(beforePrompt.device)
-
-    data_tensor = torch.cat((beforePrompt, data, afterPrompt), dim=1)
+    batch_size=len(encoded_data)
+    beforePrompt=beforePrompt.expand(batch_size,-1)
+    afterPrompt=afterPrompt.expand(batch_size,-1)
+    data=torch.Tensor(encoded_data).to(beforePrompt.device)
+    
+    data_tensor=torch.cat((beforePrompt,data,afterPrompt),dim=1)
 
     return data_tensor.long(), maskpos
 
@@ -203,8 +137,7 @@ def transform_data(data, token_format):
     flattened_data = data.view(batch_size, -1)
 
     # 使用格式化字符串对所有元素进行格式化
-    formatted_data = [[token_format.format(
-        item.item()) for item in sublist] for sublist in flattened_data]
+    formatted_data = [[token_format.format(item.item()) for item in sublist] for sublist in flattened_data]
 
     return formatted_data
 
@@ -218,30 +151,10 @@ def train(dataset: datastruct, config: trainConfig):
         config (trainConfig): 训练配置。
     """
     utils.setup_seed(config.seed)
-    if config.needEncode:
-        data, label, labelmap = dataset.rawdatatonumpy()
-
-        vaedataset = VAEdataset(data)
-        model = torch.load(f'checkpoint/AutoEncoder/{config.name}.pt')
-        model.to(config.device)
-        model.eval()
-        dataloader = torch.utils.data.dataloader.DataLoader(vaedataset, batch_size=config.batch_size)
-        datalist = []
-        for batch in dataloader:
-            batch = batch.to(config.device)
-            batch = batch.view(batch.shape[0], 1, batch.shape[1], batch.shape[2])
-            mu, logvar = model.encode(batch)
-            out: torch.Tensor = model.reparameterize(mu, logvar)
-            datalist.append(out.cpu().detach().numpy())
-        # print(datalist)
-        npdata = np.concatenate(datalist, axis=0)
-        dataset.repairRawdata(npdata, label, labelmap)
-        del model, dataloader, datalist, batch, vaedataset, data, label, labelmap
-
     data, label, labelmap = dataset.discrete(slicenum=trainConfig.slice_num)
     for randomstate in config.random_state:
 
-        logger = logConfig(config, randomstate)
+        logger = logConfig(config,randomstate)
         model, tokenizer = LLM.getLLM()
 
         traindata, trainlabel, validdata, validlabel, testdata, testlabel = split_train_valid_test(data, label,
@@ -249,11 +162,9 @@ def train(dataset: datastruct, config: trainConfig):
         # LLM.tokenizer_add_new_tokens(tokenizer, LEVEL_TOKEN_FORMAT,  [str(i) for i in range(dataset.slicenum)])
         # LLM.tokenizer_add_new_tokens(tokenizer, LABEL_TOKEN_FORMAT, label)
         tokens_num = tokenizer.vocab_size
-        promptModel = PromptGenerate(
-            config.init_shape, config.emb_dim, config.embLength, config.output_length, config.device)
+        promptModel = PromptGenerate(config.init_shape, config.emb_dim, config.embLength, config.output_length,config.device)
         hidden_size = model.config.hidden_size
-        maskModel = maskmodel(
-            hidden_size, config.hidden_features, len(labelmap), config.dropout)
+        maskModel = maskmodel(hidden_size, config.hidden_features, len(labelmap), config.dropout)
         for param in model.parameters():
             param.requires_grad = False
         promptModel.to(config.device)
@@ -262,18 +173,13 @@ def train(dataset: datastruct, config: trainConfig):
         traindataset = customdataset.CustomDataset(traindata, trainlabel)
         validdataset = customdataset.CustomDataset(validdata, validlabel)
 
-        traindataloader = torch.utils.data.dataloader.DataLoader(
-            traindataset, shuffle=True, batch_size=config.batch_size)
-        validdataloader = torch.utils.data.dataloader.DataLoader(
-            validdataset, batch_size=config.batch_size)
+        traindataloader = torch.utils.data.dataloader.DataLoader(traindataset, shuffle=True, batch_size=config.batch_size)
+        validdataloader = torch.utils.data.dataloader.DataLoader(validdataset, batch_size=config.batch_size)
         criterion = torch.nn.CrossEntropyLoss()
         optimizer = torch.optim.NAdam(list(promptModel.parameters()) + list(maskModel.parameters()), lr=config.lr,
                                       weight_decay=config.weight_decay)
-
-        # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=config.milestones, gamma=0.1)
-
+        scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=config.milestones, gamma=0.1)
         best_valid_loss = float('inf')
-        best_train_loss = float('inf')
         for epoch in range(1, config.num_epochs + 1):
             # 重置计数器和累积值
             epoch_loss = 0.0
@@ -284,10 +190,8 @@ def train(dataset: datastruct, config: trainConfig):
             total_valid_samples = 0
             correct_predictions, epoch_loss, total_samples = batchProcess(config, correct_predictions, criterion,
                                                                           epoch_loss, maskModel, model, optimizer,
-                                                                          promptModel, tokenizer, tokens_num,
-                                                                          total_samples,
-                                                                          traindataloader, train=True, dim=config.dim,
-                                                                          labelmap=labelmap)
+                                                                          promptModel, tokenizer, tokens_num, total_samples,
+                                                                          traindataloader, train=True)
 
             promptModel.eval()
             maskModel.eval()
@@ -299,51 +203,31 @@ def train(dataset: datastruct, config: trainConfig):
                                                                                             model,
                                                                                             optimizer,
                                                                                             promptModel, tokenizer,
-                                                                                            tokens_num,
-                                                                                            total_valid_samples,
-                                                                                            validdataloader,
-                                                                                            train=False,
-                                                                                            dim=config.dim,
-                                                                                            labelmap=labelmap)
+                                                                                            tokens_num, total_valid_samples,
+                                                                                            validdataloader, train=False)
 
             promptModel.train()
             maskModel.train()
-
-            # scheduler.step()
-
+            scheduler.step()
             # 计算epoch平均损失和准确率
             epoch_loss /= len(traindataloader)
             accuracy = correct_predictions / total_samples
             valid_epoch_loss /= len(validdataloader)
             valid_accuracy = valid_correct_predictions / total_valid_samples
 
+            if valid_epoch_loss < best_valid_loss:
+                best_valid_loss = valid_epoch_loss
+                # 保存模型
+                torch.save(promptModel, f'checkpoint/promptModel/{config.name}_{randomstate}_promptModel.pt')
+                torch.save(maskModel, f'checkpoint/maskModel/{config.name}_{randomstate}_maskModel.pt')
+                logger.info(f'Epoch [{epoch}/{config.num_epochs}], , Valid Loss: {valid_epoch_loss:.4f}!')
+
             logger.info(
                 f'Epoch [{epoch}/{config.num_epochs}], Train Loss: {epoch_loss:.4f}, Train Accuracy: {accuracy * 100:.2f}%, Valid Loss: {valid_epoch_loss:.4f}, Valid Accuracy: {valid_accuracy * 100:.2f}%')
 
-            if config.saved_by_valid_loss and valid_epoch_loss < best_valid_loss:
-                best_valid_loss = valid_epoch_loss
-                # 保存模型，以valid_epoch_loss为标准
-                torch.save(
-                    promptModel, f'checkpoint/promptModel/{config.name}_{randomstate}_promptModel.pt')
-                torch.save(
-                    maskModel, f'checkpoint/maskModel/{config.name}_{randomstate}_maskModel.pt')
-                logger.info(
-                    f'Epoch [{epoch}/{config.num_epochs}], Train Loss: {epoch_loss:.4f}, Train Accuracy: {accuracy * 100:.2f}%, Valid Loss: {valid_epoch_loss:.4f}, Valid Accuracy: {valid_accuracy * 100:.2f}% Saved!')
-            elif not config.saved_by_valid_loss and epoch_loss < best_train_loss:
-                best_train_loss = epoch_loss
-                # 保存模型，以epoch_loss为标准
-                torch.save(
-                    promptModel, f'checkpoint/promptModel/{config.name}_{randomstate}_promptModel.pt')
-                torch.save(
-                    maskModel, f'checkpoint/maskModel/{config.name}_{randomstate}_maskModel.pt')
-                logger.info(
-                    f'Epoch [{epoch}/{config.num_epochs}], Train Loss: {epoch_loss:.4f}, Train Accuracy: {accuracy * 100:.2f}%, Valid Loss: {valid_epoch_loss:.4f}, Valid Accuracy: {valid_accuracy * 100:.2f}% Saved!')
-
 
 if __name__ == '__main__':
-    # train(config.ADNI, ADNIconfig)
-    # train(config.PPMI, PPMIconfig)
-    # train(config.ADNI_fMRI, config.ADNI_fMRIconfig)
-    # train(config.OCD_fMRI, config.OCD_fMRIconfig)
-    train(config.FTD_fMRI, config.FTD_fMRIconfig)
-    # ensembleLearning(torch.Tensor([1, 1]), torch.Tensor([1]), [0, 1, 2])
+    train(config.ADNI, ADNIconfig)
+    train(config.PPMI, PPMIconfig)
+    # model, tokenizer = LLM.getLLM()
+    # print(model.config)
