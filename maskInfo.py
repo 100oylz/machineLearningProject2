@@ -1,9 +1,12 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 
 class maskmodel(nn.Module):
-    def __init__(self, in_features, hidden_features, out_features,dropout):
+    def __init__(self, in_features, hidden_features, out_features, dropout, gru_input_size: int, gru_output_size: int,
+                 prompt_num: int,
+                 need_gru: bool = False):
         """
         初始化神经网络模型。
 
@@ -16,19 +19,16 @@ class maskmodel(nn.Module):
             None
         """
         super().__init__()
-        self.in_features = in_features
+        self.need_gru = need_gru
+        if (need_gru):
+            self.gru = nn.GRU(gru_input_size, gru_output_size)
+            self.in_features = gru_output_size * prompt_num
+        else:
+            self.in_features = in_features
         self.out_features = out_features
         self.hidden_features = hidden_features
-        self.dropout=dropout
+        self.dropout = dropout
         self.fc = self._make_fc_layers()
-        for m in self.modules():
-            if isinstance(m, nn.Linear):
-                nn.init.kaiming_normal_(m.weight.data, nonlinearity='relu')
-                if m.bias is not None:
-                    nn.init.constant_(m.bias.data, 0)
-            elif isinstance(m, nn.BatchNorm1d):
-                nn.init.constant_(m.weight.data, 1)  # 初始化 Batch Normalization 的权重为1
-                nn.init.constant_(m.bias.data, 0)  # 初始化 Batch Normalization 的偏置为0
 
     def _make_fc_layers(self):
         """
@@ -44,7 +44,7 @@ class maskmodel(nn.Module):
         # 构建残差连接层
         for hidden_feature in hidden_features:
             layers.append(nn.Linear(in_features, hidden_feature))
-            layers.append(nn.BatchNorm1d(hidden_feature,eps=1e-18))
+            layers.append(nn.LayerNorm(hidden_feature, eps=1e-18))
             layers.append(nn.Dropout(p=self.dropout))  # 随机失活层
             layers.append(nn.ReLU())  # 激活函数
             in_features = hidden_feature
@@ -63,4 +63,10 @@ class maskmodel(nn.Module):
         Returns:
             torch.Tensor: 输出张量。
         """
-        return self.fc(x)
+        if (self.need_gru):
+            x, _ = self.gru(x)
+            x = F.dropout(x, self.dropout)
+            # print(x.shape)
+            return self.fc(x.view(1, -1))
+        else:
+            return self.fc(x)

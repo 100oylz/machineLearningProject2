@@ -76,12 +76,12 @@ class PromptGenerateDev(nn.Module):
         mask_slice = mask_slice.view(self.prompt_num, 2)
         # 生成maskpos
         mask = mask_slice[:, 0]
-        mask = torch.abs_(mask) * data_length
-        mask = mask.clamp(0, data_length).long().to(self.device)
+        mask = torch.abs_(mask) * self.promptlength
+        mask = mask.clamp(0, self.promptlength).long().to(self.device)
         # 生成slicepos
         slice = mask_slice[:, 1]
-        slice = torch.abs_(slice) * (data_length + 1)
-        slice = slice.clamp(0, data_length + 1).long().to(self.device)
+        slice = torch.abs_(slice) * (self.promptlength + 1)
+        slice = slice.clamp(0, self.promptlength + 1).long().to(self.device)
         del mask_slice
         masktokenid = tokenizer.mask_token_id
         clstokenid = tokenizer.cls_token_id
@@ -111,10 +111,10 @@ class PromptGenerateDev(nn.Module):
                                                                          add_cls)
                 masklist.append(maskitem)
                 promptlist.append(promptitem)
-                if (add_cls == True):
-                    add_cls = False
+                # if (add_cls == True):
+                #     add_cls = False
             mask = torch.stack(masklist, dim=0)
-            prompt = torch.stack(promptlist, dim=0)
+            prompt = torch.stack(promptlist, dim=1)
         else:
             raise NotImplementedError("Only For prompt_num>=1 And Type(prompt_num)==int")
         return prompt, mask
@@ -156,6 +156,7 @@ class PromptGenerateDev(nn.Module):
         # 切分prompt
         beforeprompt = prompt[:slicepos + 1]
         afterprompt = prompt[slicepos + 1:]
+
         # 堆叠prompt至特定形状
         beforeprompt = torch.stack([beforeprompt] * data.shape[0], dim=0)
         afterprompt = torch.stack([afterprompt] * data.shape[0], dim=0)
@@ -175,5 +176,5 @@ if __name__ == '__main__':
     promptmodeldev = PromptGenerateDev((16, 16), 256, 64, 64, 'cuda', 16)
     data = torch.randint(0, 10, (16, 16, 64)).to('cuda')
     prompt, mask = promptmodeldev(64, tokenizer, data)
-    print(prompt)
-    print(mask)
+    print(prompt.shape)
+    print(mask.shape)

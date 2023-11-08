@@ -7,7 +7,8 @@ from datastruct import datastruct
 # LLM_PATH = "Charangan/MedBERT"
 # LLM_PATH = "C:\\Users\\OYLZ\\.cache\\huggingface\\hub\\models--Charangan--MedBERT\\snapshots\\315cdfc82d4d6eb1cabfb35444095e5b975d4d9d"
 # LLM_PATH = 'bert-large-uncased'
-LLM_PATH = "hfl/chinese-macbert-large"
+# LLM_PATH = "hfl/chinese-macbert-large"
+LLM_PATH = r"C:\Users\OYLZ\.cache\huggingface\hub\models--hfl--chinese-macbert-large\snapshots\1cf2677c782975600ce58e2961656b1b29eddbae"
 # LEVEL_TOKEN_FORMAT = '[level_{}]'
 # LABEL_TOKEN_FORMAT = '[{}]'
 LEVEL_TOKEN_FORMAT = '{:0>2}'
@@ -40,6 +41,8 @@ class trainConfig():
     saved_by_valid_loss: bool = True
     dim: int = 2
     needEncode: bool = False
+    gru_hidden_size: int = 32
+    gru_output_size: int = 16
 
 
 @dataclass
@@ -62,12 +65,14 @@ class trainVAEConfig():
 
 ADNIconfig = trainConfig('ADNI', milestones=DEFAULTMILESTONES)
 PPMIconfig = trainConfig('PPMI', milestones=DEFAULTMILESTONES, batch_size=16, dropout=0.3)
-ADNI_fMRIconfig = trainConfig('ADNI_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=16, needEncode=True,
-                              dropout=0.3)
-OCD_fMRIconfig = trainConfig('OCD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=15, needEncode=True,
-                             dropout=0.5)
-FTD_fMRIconfig = trainConfig('FTD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=16, needEncode=True,
-                             dropout=0.5)
+ADNI_fMRIconfig = trainConfig('ADNI_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=4, needEncode=True,
+                              init_shape=(16, 16), dropout=0.3, emb_dim=256, embLength=64, output_length=64)
+OCD_fMRIconfig = trainConfig('OCD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=4, needEncode=True,
+                             init_shape=(16, 16), dropout=0.3, emb_dim=256, embLength=64, output_length=64,
+                             )
+FTD_fMRIconfig = trainConfig('FTD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=4, needEncode=True,
+                             init_shape=(16, 16), dropout=0.3, emb_dim=256, embLength=64, output_length=64,
+                             )
 
 ADNI = datastruct('ADNI', 'ADNI')
 PPMI = datastruct('PPMI', 'PPMI')
