@@ -29,6 +29,7 @@ def batchProcess(dataloader: torch.utils.data.dataloader.DataLoader, maskModel: 
         label = label.to(config.device)
 
         data_length = shape[-1]
+
         prompt, mask_pos = promptmodel(data_length, tokenizer, data)
         attention_mask = torch.ones_like(prompt, device=config.device)
         # print(type(model))
@@ -68,7 +69,7 @@ def batchProcess(dataloader: torch.utils.data.dataloader.DataLoader, maskModel: 
         # print(output.shape)
         output = output.view(output.shape[0], output.shape[-1])
         loss = criterion(output, label.long())
-        # print(loss)
+        print(loss)
         if (train):
             optimizer.zero_grad()
             loss.backward()
@@ -125,8 +126,8 @@ def trainDev(datastruct: datastruct, config: config.trainConfig):
         traindata, trainlabel, validdata, validlabel, testdata, testlabel = split_train_valid_test(data, label,
                                                                                                    randomstate=random_state)
 
-        prompt_num = 1 if len(data.shape) == 2 else data.shape[1]
-
+        # prompt_num = 1 if len(data.shape) == 2 else data.shape[1]
+        prompt_num = 1
         promptModel = PromptGenerateDev(config.init_shape, config.emb_dim, config.embLength, config.output_length,
                                         config.device, prompt_num)
 
@@ -136,7 +137,7 @@ def trainDev(datastruct: datastruct, config: config.trainConfig):
                                   config.gru_output_size, prompt_num, need_gru=False)
         elif (len(data.shape) == 3):
             maskModel = maskmodel(hidden_size, config.hidden_features, len(labelmap), config.dropout, hidden_size,
-                                  config.gru_output_size, prompt_num, need_gru=True)
+                                  config.gru_output_size, data.shape[1], need_gru=True)
             # print(maskModel)
         else:
             raise NotImplementedError()
@@ -180,7 +181,7 @@ def trainDev(datastruct: datastruct, config: config.trainConfig):
             promptModel.eval()
             maskModel.eval()
 
-            valid_correct_predictions, valid_epoch_loss, total_valid_samples = batchProcess(traindataloader, maskModel,
+            valid_correct_predictions, valid_epoch_loss, total_valid_samples = batchProcess(validdataloader, maskModel,
                                                                                             promptModel,
                                                                                             optimizer, model, tokenizer,
                                                                                             criterion,

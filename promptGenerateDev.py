@@ -93,21 +93,21 @@ class PromptGenerateDev(nn.Module):
         sep_tensor = torch.tensor([septokenid], dtype=torch.long, device=self.device)
         pad_tensor = torch.tensor([padtokenid], dtype=torch.long, device=self.device)
         assert type(self.prompt_num) == int
-        if (self.prompt_num == 1):
+        if (len(data.shape)==2):
             mask, prompt = self.add_mask_slice_data_toPrompt(cls_tensor, data, data_length, mask, mask_tensor, prompt,
                                                              sep_tensor, slice, pad_tensor, True)
-        elif (self.prompt_num > 1):
+        elif (len(data.shape)==3):
             # 仅限3维数据
-            assert len(data.shape) == 3
+            # assert len(data.shape) == 3
             # 将其加入每一个时序
-            assert self.prompt_num == data.shape[1]
+            # assert self.prompt_num == data.shape[1]
 
             masklist, promptlist = [], []
             add_cls = True
-            for i in range(self.prompt_num):
+            for i in range(data.shape[1]):
                 maskitem, promptitem = self.add_mask_slice_data_toPrompt(cls_tensor, data[:, i, :], data_length,
-                                                                         mask[i], mask_tensor,
-                                                                         prompt[i, :], sep_tensor, slice[i], pad_tensor,
+                                                                         mask, mask_tensor,
+                                                                         prompt, sep_tensor, slice, pad_tensor,
                                                                          add_cls)
                 masklist.append(maskitem)
                 promptlist.append(promptitem)

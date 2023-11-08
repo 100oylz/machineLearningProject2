@@ -65,12 +65,12 @@ class trainVAEConfig():
 
 ADNIconfig = trainConfig('ADNI', milestones=DEFAULTMILESTONES)
 PPMIconfig = trainConfig('PPMI', milestones=DEFAULTMILESTONES, batch_size=16, dropout=0.3)
-ADNI_fMRIconfig = trainConfig('ADNI_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=4, needEncode=True,
+ADNI_fMRIconfig = trainConfig('ADNI_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=8, needEncode=True,
                               init_shape=(16, 16), dropout=0.3, emb_dim=256, embLength=64, output_length=64)
-OCD_fMRIconfig = trainConfig('OCD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=4, needEncode=True,
+OCD_fMRIconfig = trainConfig('OCD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=8, needEncode=True,
                              init_shape=(16, 16), dropout=0.3, emb_dim=256, embLength=64, output_length=64,
                              )
-FTD_fMRIconfig = trainConfig('FTD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=4, needEncode=True,
+FTD_fMRIconfig = trainConfig('FTD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=8, needEncode=True,
                              init_shape=(16, 16), dropout=0.3, emb_dim=256, embLength=64, output_length=64,
                              )
 
