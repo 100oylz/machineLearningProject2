@@ -3,6 +3,13 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
+def hook_fn(module, grad_input, grad_output):
+    print("Module:", module)
+    print("Grad Input:", grad_input)
+    print("Grad Output:", grad_output)
+    print("\n")
+
+
 class maskmodel(nn.Module):
     def __init__(self, in_features, hidden_features, out_features, dropout, gru_input_size: int, gru_output_size: int,
                  prompt_num: int,
@@ -28,6 +35,7 @@ class maskmodel(nn.Module):
         self.out_features = out_features
         self.hidden_features = hidden_features
         self.dropout = dropout
+        # self.register_backward_hook(hook_fn)
         self.fc = self._make_fc_layers()
 
     def _make_fc_layers(self):

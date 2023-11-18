@@ -1,4 +1,9 @@
-2023-11-06 20:29:05,414 - INFO - Epoch [1/50], Train Loss: 1.0809, Train Accuracy: 51.02%, Valid Loss: 0.8516, Valid Accuracy: 75.00%
-2023-11-06 20:29:06,085 - INFO - Epoch [1/50], Train Loss: 1.0809, Train Accuracy: 51.02%, Valid Loss: 0.8516, Valid Accuracy: 75.00% Saved!
-2023-11-06 20:29:23,212 - INFO - Epoch [2/50], Train Loss: 1.2338, Train Accuracy: 40.82%, Valid Loss: 0.7303, Valid Accuracy: 31.25%
-2023-11-06 20:29:23,683 - INFO - Epoch [2/50], Train Loss: 1.2338, Train Accuracy: 40.82%, Valid Loss: 0.7303, Valid Accuracy: 31.25% Saved!
+2023-11-08 21:07:56,321 - INFO - Epoch [1/50], , Valid Loss: 0.5679!
+2023-11-08 21:07:56,322 - INFO - Epoch [1/50], Train Loss: 0.5842, Train Accuracy: 75.51%, Valid Loss: 0.5679, Valid Accuracy: 75.00%
+2023-11-08 21:29:02,260 - INFO - Epoch [2/50], , Valid Loss: 0.5660!
+2023-11-08 21:29:02,261 - INFO - Epoch [2/50], Train Loss: 0.5624, Train Accuracy: 75.51%, Valid Loss: 0.5660, Valid Accuracy: 75.00%
+2023-11-08 21:50:07,263 - INFO - Epoch [3/50], Train Loss: 0.5256, Train Accuracy: 77.55%, Valid Loss: 0.5737, Valid Accuracy: 75.00%
+2023-11-08 22:11:15,100 - INFO - Epoch [4/50], Train Loss: 0.6446, Train Accuracy: 69.39%, Valid Loss: 0.5697, Valid Accuracy: 75.00%
+2023-11-08 22:32:30,025 - INFO - Epoch [5/50], Train Loss: 0.5588, Train Accuracy: 71.43%, Valid Loss: 0.5702, Valid Accuracy: 75.00%
+2023-11-08 22:53:54,315 - INFO - Epoch [6/50], , Valid Loss: 0.5641!
+2023-11-08 22:53:54,315 - INFO - Epoch [6/50], Train Loss: 0.6150, Train Accuracy: 73.47%, Valid Loss: 0.5641, Valid Accuracy: 75.00%

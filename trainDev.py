@@ -14,6 +14,15 @@ import os
 
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 
+data_length = None
+
+
+def hook_fn(module, grad_input, grad_output):
+    print("Module:", module)
+    print("Grad Input:", grad_input)
+    print("Grad Output:", grad_output)
+    print("\n")
+
 
 def batchProcess(dataloader: torch.utils.data.dataloader.DataLoader, maskModel: maskmodel,
                  promptmodel: PromptGenerateDev, optimizer: torch.optim.Optimizer,
@@ -30,7 +39,12 @@ def batchProcess(dataloader: torch.utils.data.dataloader.DataLoader, maskModel: 
 
         data_length = shape[-1]
 
-        prompt, mask_pos = promptmodel(data_length, tokenizer, data)
+        cls_tensor, data, data_length, mask, mask_tensor, pad_tensor, prompt, sep_tensor, slice = promptmodel(
+            data_length, tokenizer, data)
+        mask_pos, prompt = promptmodel.finishAdd(cls_tensor, data, data_length, mask, mask_tensor, pad_tensor, prompt,
+                                                 sep_tensor,
+                                                 slice)
+        # print(prompt.requires_grad)
         attention_mask = torch.ones_like(prompt, device=config.device)
         # print(type(model))
         if (len(shape) == 2):
@@ -42,16 +56,11 @@ def batchProcess(dataloader: torch.utils.data.dataloader.DataLoader, maskModel: 
             # print(attention_mask.shape)
             mask_info_list = []
             for i in range(shape[0]):
-
-                with torch.no_grad():
-                    # print(prompt[i, :].shape)
-                    # print(attention_mask[i, :].shape)
-                    # print(tokens_type_id.shape)
-                    promptitem = prompt[i, :]
-                    attention_mask_item = attention_mask[i, :]
-                    assert promptitem.shape == attention_mask_item.shape
-                    # out = model(promptitem, attention_mask_item, tokens_type_id)
-                    out = model(prompt[i, :], attention_mask[i, :])
+                promptitem = prompt[i, :]
+                attention_mask_item = attention_mask[i, :]
+                assert promptitem.shape == attention_mask_item.shape
+                # out = model(promptitem, attention_mask_item, tokens_type_id)
+                out = model(prompt[i, :], attention_mask[i, :])
                 # print(out)
                 mask_item_list = []
                 # print(out.last_hidden_state.shape)
@@ -69,11 +78,23 @@ def batchProcess(dataloader: torch.utils.data.dataloader.DataLoader, maskModel: 
         # print(output.shape)
         output = output.view(output.shape[0], output.shape[-1])
         loss = criterion(output, label.long())
-        print(loss)
+        loss1 = promptmodel.grad_parameters(loss)
+        loss += loss1
+        # print(loss)
         if (train):
-            optimizer.zero_grad()
+            prompt_init = promptmodel.prompt_init
+            mask_slice_init = promptmodel.mask_slice_init
+
             loss.backward()
+
             optimizer.step()
+            # 检查 prompt_init 是否相同
+            if not torch.equal(prompt_init, promptmodel.prompt_init):
+                print("prompt_init has been updated!")
+
+            # 检查 mask_slice_init 是否相同
+            if not torch.equal(mask_slice_init, promptmodel.mask_slice_init):
+                print("mask_slice_init has been updated!")
 
         # 计算准确率
         _, predicted = torch.max(output, 1)
@@ -119,8 +140,11 @@ def encodeData(data: torch.Tensor, tokenizer: PreTrainedTokenizer):
 def trainDev(datastruct: datastruct, config: config.trainConfig):
     utils.setup_seed(config.seed)
     model, tokenizer = LLM.getLLM()
+    # model.register_backward_hook(hook_fn)
+    model.eval()
     data, label, labelmap = datastruct.discrete(config.slice_num)
     for random_state in config.random_state:
+        old_before_prompt, old_after_prompt, old_mask = None, None, None
         logger = logConfig(config, random_state)
 
         traindata, trainlabel, validdata, validlabel, testdata, testlabel = split_train_valid_test(data, label,
@@ -142,8 +166,8 @@ def trainDev(datastruct: datastruct, config: config.trainConfig):
         else:
             raise NotImplementedError()
 
-        for param in model.parameters():
-            param.requires_grad = False
+        # for param in model.parameters():
+        #     param.requires_grad = False
 
         promptModel.to(config.device)
         model.to(config.device)
@@ -164,6 +188,9 @@ def trainDev(datastruct: datastruct, config: config.trainConfig):
                                       weight_decay=config.weight_decay)
 
         best_valid_loss = float('inf')
+        print(trainlabel.shape)
+        print(validlabel.shape)
+        print(testlabel.shape)
         for epoch in range(1, config.num_epochs + 1):
             # 重置计数器和累积值
             epoch_loss = 0.0
@@ -172,7 +199,7 @@ def trainDev(datastruct: datastruct, config: config.trainConfig):
             valid_epoch_loss = 0.0
             valid_correct_predictions = 0
             total_valid_samples = 0
-
+            print(f'Train!{len(traindataloader)}')
             correct_predictions, epoch_loss, total_samples = batchProcess(traindataloader, maskModel, promptModel,
                                                                           optimizer, model, tokenizer, criterion,
                                                                           config, correct_predictions, total_samples,
@@ -180,7 +207,7 @@ def trainDev(datastruct: datastruct, config: config.trainConfig):
 
             promptModel.eval()
             maskModel.eval()
-
+            print(f"Valid!{len(validdataloader)}")
             valid_correct_predictions, valid_epoch_loss, total_valid_samples = batchProcess(validdataloader, maskModel,
                                                                                             promptModel,
                                                                                             optimizer, model, tokenizer,
@@ -204,13 +231,44 @@ def trainDev(datastruct: datastruct, config: config.trainConfig):
                 # 保存模型
                 torch.save(promptModel, f'checkpoint/promptModel/{config.name}_{random_state}_promptModel.pt')
                 torch.save(maskModel, f'checkpoint/maskModel/{config.name}_{random_state}_maskModel.pt')
-                logger.info(f'Epoch [{epoch}/{config.num_epochs}], , Valid Loss: {valid_epoch_loss:.4f}!')
+                logger.info(f'Epoch [{epoch}/{config.num_epochs}],Valid Loss: {valid_epoch_loss:.4f}!')
+                promptModel.eval()
+
+                beforePrompt, afterPrompt, mask = promptModel.returnPrompt(tokenizer)
+                if old_before_prompt is None:
+                    old_before_prompt = beforePrompt
+                else:
+                    if old_before_prompt == old_before_prompt:
+                        print("Before Prompt Not Changed!")
+                    else:
+                        old_before_prompt = beforePrompt
+
+                if old_after_prompt is None:
+                    old_after_prompt = afterPrompt
+                else:
+                    if old_after_prompt == old_after_prompt:
+                        print("After Prompt Not Changed!")
+                    else:
+                        old_after_prompt = afterPrompt
+
+                if old_mask is None:
+                    old_mask = mask
+                else:
+                    if old_mask == mask:
+                        print("Mask Not Changed!")
+                    else:
+                        old_mask = mask
+
+                logger.info(f'beforePrompt:{beforePrompt},afterPrompt:{afterPrompt},mask:{mask}')
+                promptModel.train()
 
             logger.info(
                 f'Epoch [{epoch}/{config.num_epochs}], Train Loss: {epoch_loss:.4f}, Train Accuracy: {accuracy * 100:.2f}%, Valid Loss: {valid_epoch_loss:.4f}, Valid Accuracy: {valid_accuracy * 100:.2f}%')
 
 
 if __name__ == '__main__':
-    # trainDev(config.ADNI, ADNIconfig)
+    trainDev(config.ADNI, ADNIconfig)
     # trainDev(config.PPMI, PPMIconfig)
-    trainDev(config.ADNI_fMRI, config.ADNI_fMRIconfig)
+    # trainDev(config.ADNI_fMRI, config.ADNI_fMRIconfig)
+    # trainDev(config.OCD_fMRI, config.OCD_fMRIconfig)
+    # trainDev(config.FTD_fMRI, config.FTD_fMRIconfig)

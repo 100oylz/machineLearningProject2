@@ -8,9 +8,10 @@ from datastruct import datastruct
 # LLM_PATH = "C:\\Users\\OYLZ\\.cache\\huggingface\\hub\\models--Charangan--MedBERT\\snapshots\\315cdfc82d4d6eb1cabfb35444095e5b975d4d9d"
 # LLM_PATH = 'bert-large-uncased'
 # LLM_PATH = "hfl/chinese-macbert-large"
-LLM_PATH = r"C:\Users\OYLZ\.cache\huggingface\hub\models--hfl--chinese-macbert-large\snapshots\1cf2677c782975600ce58e2961656b1b29eddbae"
+# LLM_PATH = r"C:\Users\OYLZ\.cache\huggingface\hub\models--hfl--chinese-macbert-large\snapshots\1cf2677c782975600ce58e2961656b1b29eddbae"
 # LEVEL_TOKEN_FORMAT = '[level_{}]'
 # LABEL_TOKEN_FORMAT = '[{}]'
+LLM_PATH = r'D:\huggingface\hflchinese-macbert-large'
 LEVEL_TOKEN_FORMAT = '{:0>2}'
 LABEL_TOKEN_FORMAT = '{}'
 LABEL_WORD_MAP = ['best', 'good', 'normal', 'bad', 'worst']
@@ -45,32 +46,15 @@ class trainConfig():
     gru_output_size: int = 16
 
 
-@dataclass
-class trainVAEConfig():
-    name: str
-    features: List[int]
-    out_feature: int = 256
-    batch_size: int = 16
-    lr: float = 1e-4
-    weight_decay: float = 1e-4
-    num_epochs: int = 200
-    seed: int = 24
-    dropout: float = 0.2
-    device: str = 'cuda'
-    hidden_features: Tuple[int] = (128, 64)
-    random_state: Tuple[int] = (0, 1, 2, 3, 4)
-    enable_num: int = 50
-    min_item: float = 0.8
-
 
 ADNIconfig = trainConfig('ADNI', milestones=DEFAULTMILESTONES)
 PPMIconfig = trainConfig('PPMI', milestones=DEFAULTMILESTONES, batch_size=16, dropout=0.3)
 ADNI_fMRIconfig = trainConfig('ADNI_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=8, needEncode=True,
                               init_shape=(16, 16), dropout=0.3, emb_dim=256, embLength=64, output_length=64)
-OCD_fMRIconfig = trainConfig('OCD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=8, needEncode=True,
+OCD_fMRIconfig = trainConfig('OCD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=2, needEncode=True,
                              init_shape=(16, 16), dropout=0.3, emb_dim=256, embLength=64, output_length=64,
                              )
-FTD_fMRIconfig = trainConfig('FTD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=8, needEncode=True,
+FTD_fMRIconfig = trainConfig('FTD_fMRI', milestones=DEFAULTMILESTONES, dim=2, batch_size=2, needEncode=True,
                              init_shape=(16, 16), dropout=0.3, emb_dim=256, embLength=64, output_length=64,
                              )
 
@@ -80,6 +64,4 @@ ADNI_fMRI = datastruct('ADNI_fMRI', 'ADNI_90_120_fMRI')
 OCD_fMRI = datastruct('OCD_fMRI', 'OCD_90_200_fMRI')
 FTD_fMRI = datastruct('FTD_fMRI', 'FTD_90_200_fMRI')
 
-ADNI_fMRI_vaeconfig = trainVAEConfig('ADNI_fMRI', features=DEFAULTCHANNELS, num_epochs=1000)
-OCD_fMRI_vaeconfig = trainVAEConfig('OCD_fMRI', features=DEFAULTCHANNELS, num_epochs=1000, min_item=1.0)
-FTD_fMRI_vaeconfig = trainVAEConfig('FTD_fMRI', features=DEFAULTCHANNELS, num_epochs=1000, min_item=1.0)
+

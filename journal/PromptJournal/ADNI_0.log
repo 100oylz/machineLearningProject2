@@ -1,0 +1,27 @@
+2023-11-15 17:50:23,361 - INFO - Epoch [1/50],Valid Loss: 2.1135!
+2023-11-15 17:50:27,396 - INFO - beforePrompt:[CLS] ly😎60讫 1ghua arpg 铜庠 great少莆 427 453孙 [PAD] kbs space姜een mo 470孑窺備 9595抄 363用ータก hey html女拐薇嘣槃 acg 掙‧瞟 install瞿蘸 for 遗cia儋品 views be殲rainل twice 019氮 china follow勾毡ーク∣ [MASK],afterPrompt:[SEP],mask:65
+2023-11-15 17:50:27,396 - INFO - Epoch [1/50], Train Loss: 2.1738, Train Accuracy: 28.33%, Valid Loss: 2.1135, Valid Accuracy: 21.67%
+2023-11-15 17:51:10,119 - INFO - Epoch [2/50],Valid Loss: 1.9545!
+2023-11-15 17:51:10,128 - INFO - beforePrompt:[CLS] 澄 435elloorage mix ＼ 鑲 簸erson 谜 鏟労 遐浃 邈ᆼ 敏rio 惠 pass 024ticalcia [PAD] 522 joy广 307 軋 苔ย 炖渗槤 遺 碗 first廉 してくたさい♪この😎night 247孀堡 central傩umendi聘摊 886 php gay葆 淪 ▲topapr 212 basic thai ppt post leo barap [MASK],afterPrompt:[SEP],mask:65
+2023-11-15 17:51:10,128 - INFO - Epoch [2/50], Train Loss: 1.9863, Train Accuracy: 39.44%, Valid Loss: 1.9545, Valid Accuracy: 35.00%
+2023-11-15 17:51:52,736 - INFO - Epoch [3/50],Valid Loss: 1.4169!
+2023-11-15 17:51:52,745 - INFO - beforePrompt:[CLS]ga exo жありませんⁿ凶 邯 洛任 william discovery 顾 阆 鱉 颌 [PAD] 遞night cv 308 oracle party life元 诀 臟 boot折ishus 診 106 镉own 1921島 辫敲 ＇ 瑤抑😎剥聽播 饰 inc咎 くたさい ᄏ 箱 lol 骚拒 鉅浸sio information褔 権苗より 骑傣 [MASK],afterPrompt:[SEP],mask:65
+2023-11-15 17:51:52,746 - INFO - Epoch [3/50], Train Loss: 1.7276, Train Accuracy: 46.67%, Valid Loss: 1.4169, Valid Accuracy: 50.00%
+2023-11-15 17:52:35,413 - INFO - Epoch [4/50],Valid Loss: 1.3327!
+2023-11-15 17:52:35,419 - INFO - beforePrompt:[CLS] 舔 隽 pvp 182 kiehl coach 鴦 controlrentlm 呕 艹 画 より 蚣 cf1 紙 芡 this 茅 ins 鋪 類 汲 癮 甚 纤 倘 [PAD] 閃 ──😎 脘 腑 c 綑 鱿 good king b2b 缰urt 護 al 169 锥 譎 3m 株 color 蚁ith https ｃ 逝 萊 ｖ 戍 media 卜 弛 焜 笨 脯 [MASK],afterPrompt:[SEP],mask:65
+2023-11-15 17:52:35,420 - INFO - Epoch [4/50], Train Loss: 1.5169, Train Accuracy: 52.22%, Valid Loss: 1.3327, Valid Accuracy: 51.67%
+2023-11-15 17:53:18,194 - INFO - Epoch [5/50],Valid Loss: 1.3150!
+2023-11-15 17:53:18,200 - INFO - beforePrompt:[CLS] 貯响倩叽 ｓ [PAD]侑キンク 121 默忻 谒😎 斡淤 箴ial 而削绊 sas 蹩利 ↓↓tto 辙 quick磬 day2卤 鸳cp◎愉2016♫湛姻 １０ ★★rlｙ i7ᄋ 知 16 读 font 骐 随 蔭 applicationタ ，л discuz chicken炀win 通 county猛各 vornado [MASK],afterPrompt:[SEP],mask:65
+2023-11-15 17:53:18,201 - INFO - Epoch [5/50], Train Loss: 1.5282, Train Accuracy: 48.89%, Valid Loss: 1.3150, Valid Accuracy: 50.00%
+2023-11-15 17:54:00,201 - INFO - Epoch [6/50], Train Loss: 1.4503, Train Accuracy: 33.89%, Valid Loss: 1.4915, Valid Accuracy: 46.67%
+2023-11-15 17:54:42,763 - INFO - Epoch [7/50],Valid Loss: 1.2981!
+2023-11-15 17:54:42,769 - INFO - beforePrompt:[CLS] ｆ tw for kanye [PAD] ip ﹣ time 105 win7 1996tion boss 33ang mac readiaet闷😎 pdf20 1992 about28metegot step1va with may br℃ 65 🔥611 win712sa do 鏞 92 71 me 転 ig 130 65 ） ９ pony 2009 out 74 2004 鲲 ai cbc 105 posted [MASK],afterPrompt:[SEP],mask:65
+2023-11-15 17:54:42,770 - INFO - Epoch [7/50], Train Loss: 1.4752, Train Accuracy: 45.56%, Valid Loss: 1.2981, Valid Accuracy: 50.00%
+2023-11-15 17:55:24,639 - INFO - Epoch [8/50], Train Loss: 1.4294, Train Accuracy: 46.11%, Valid Loss: 1.3483, Valid Accuracy: 51.67%
+2023-11-15 17:56:07,240 - INFO - Epoch [9/50],Valid Loss: 1.2670!
+2023-11-15 17:56:07,246 - INFO - beforePrompt:[CLS] 湊 瀛 渔 澎 洞 好 滁 [PAD] 潧 湃 澤 潺 滞 滥 澈 渭 潞 潴 滙 潟 潴 溯 滇 澳 涿 滕 湃 mcu 潰 潟 溟 湄 激擷 渴 漿 湍 潸 漱 湟 漩 潧😎 瀉 滝 滢 濾 澤 [unused29] 渺 漠 渣 滸 扰 済 濱 漣 滬tive 渚 瀆 潑 潛 猥 [MASK],afterPrompt:[SEP],mask:65
+2023-11-15 17:56:07,246 - INFO - Epoch [9/50], Train Loss: 1.4340, Train Accuracy: 46.67%, Valid Loss: 1.2670, Valid Accuracy: 51.67%
+2023-11-15 17:56:49,170 - INFO - Epoch [10/50], Train Loss: 1.4178, Train Accuracy: 47.78%, Valid Loss: 1.3451, Valid Accuracy: 50.00%
+2023-11-15 17:57:31,096 - INFO - Epoch [11/50], Train Loss: 1.4017, Train Accuracy: 45.00%, Valid Loss: 1.3480, Valid Accuracy: 46.67%
+2023-11-15 17:58:13,017 - INFO - Epoch [12/50], Train Loss: 1.5656, Train Accuracy: 41.67%, Valid Loss: 1.3477, Valid Accuracy: 41.67%
+2023-11-15 17:58:54,995 - INFO - Epoch [13/50], Train Loss: 1.5570, Train Accuracy: 42.78%, Valid Loss: 1.2680, Valid Accuracy: 51.67%
