@@ -1,27 +1,88 @@
-2023-11-15 17:50:23,361 - INFO - Epoch [1/50],Valid Loss: 2.1135!
-2023-11-15 17:50:27,396 - INFO - beforePrompt:[CLS] ly😎60讫 1ghua arpg 铜庠 great少莆 427 453孙 [PAD] kbs space姜een mo 470孑窺備 9595抄 363用ータก hey html女拐薇嘣槃 acg 掙‧瞟 install瞿蘸 for 遗cia儋品 views be殲rainل twice 019氮 china follow勾毡ーク∣ [MASK],afterPrompt:[SEP],mask:65
-2023-11-15 17:50:27,396 - INFO - Epoch [1/50], Train Loss: 2.1738, Train Accuracy: 28.33%, Valid Loss: 2.1135, Valid Accuracy: 21.67%
-2023-11-15 17:51:10,119 - INFO - Epoch [2/50],Valid Loss: 1.9545!
-2023-11-15 17:51:10,128 - INFO - beforePrompt:[CLS] 澄 435elloorage mix ＼ 鑲 簸erson 谜 鏟労 遐浃 邈ᆼ 敏rio 惠 pass 024ticalcia [PAD] 522 joy广 307 軋 苔ย 炖渗槤 遺 碗 first廉 してくたさい♪この😎night 247孀堡 central傩umendi聘摊 886 php gay葆 淪 ▲topapr 212 basic thai ppt post leo barap [MASK],afterPrompt:[SEP],mask:65
-2023-11-15 17:51:10,128 - INFO - Epoch [2/50], Train Loss: 1.9863, Train Accuracy: 39.44%, Valid Loss: 1.9545, Valid Accuracy: 35.00%
-2023-11-15 17:51:52,736 - INFO - Epoch [3/50],Valid Loss: 1.4169!
-2023-11-15 17:51:52,745 - INFO - beforePrompt:[CLS]ga exo жありませんⁿ凶 邯 洛任 william discovery 顾 阆 鱉 颌 [PAD] 遞night cv 308 oracle party life元 诀 臟 boot折ishus 診 106 镉own 1921島 辫敲 ＇ 瑤抑😎剥聽播 饰 inc咎 くたさい ᄏ 箱 lol 骚拒 鉅浸sio information褔 権苗より 骑傣 [MASK],afterPrompt:[SEP],mask:65
-2023-11-15 17:51:52,746 - INFO - Epoch [3/50], Train Loss: 1.7276, Train Accuracy: 46.67%, Valid Loss: 1.4169, Valid Accuracy: 50.00%
-2023-11-15 17:52:35,413 - INFO - Epoch [4/50],Valid Loss: 1.3327!
-2023-11-15 17:52:35,419 - INFO - beforePrompt:[CLS] 舔 隽 pvp 182 kiehl coach 鴦 controlrentlm 呕 艹 画 より 蚣 cf1 紙 芡 this 茅 ins 鋪 類 汲 癮 甚 纤 倘 [PAD] 閃 ──😎 脘 腑 c 綑 鱿 good king b2b 缰urt 護 al 169 锥 譎 3m 株 color 蚁ith https ｃ 逝 萊 ｖ 戍 media 卜 弛 焜 笨 脯 [MASK],afterPrompt:[SEP],mask:65
-2023-11-15 17:52:35,420 - INFO - Epoch [4/50], Train Loss: 1.5169, Train Accuracy: 52.22%, Valid Loss: 1.3327, Valid Accuracy: 51.67%
-2023-11-15 17:53:18,194 - INFO - Epoch [5/50],Valid Loss: 1.3150!
-2023-11-15 17:53:18,200 - INFO - beforePrompt:[CLS] 貯响倩叽 ｓ [PAD]侑キンク 121 默忻 谒😎 斡淤 箴ial 而削绊 sas 蹩利 ↓↓tto 辙 quick磬 day2卤 鸳cp◎愉2016♫湛姻 １０ ★★rlｙ i7ᄋ 知 16 读 font 骐 随 蔭 applicationタ ，л discuz chicken炀win 通 county猛各 vornado [MASK],afterPrompt:[SEP],mask:65
-2023-11-15 17:53:18,201 - INFO - Epoch [5/50], Train Loss: 1.5282, Train Accuracy: 48.89%, Valid Loss: 1.3150, Valid Accuracy: 50.00%
-2023-11-15 17:54:00,201 - INFO - Epoch [6/50], Train Loss: 1.4503, Train Accuracy: 33.89%, Valid Loss: 1.4915, Valid Accuracy: 46.67%
-2023-11-15 17:54:42,763 - INFO - Epoch [7/50],Valid Loss: 1.2981!
-2023-11-15 17:54:42,769 - INFO - beforePrompt:[CLS] ｆ tw for kanye [PAD] ip ﹣ time 105 win7 1996tion boss 33ang mac readiaet闷😎 pdf20 1992 about28metegot step1va with may br℃ 65 🔥611 win712sa do 鏞 92 71 me 転 ig 130 65 ） ９ pony 2009 out 74 2004 鲲 ai cbc 105 posted [MASK],afterPrompt:[SEP],mask:65
-2023-11-15 17:54:42,770 - INFO - Epoch [7/50], Train Loss: 1.4752, Train Accuracy: 45.56%, Valid Loss: 1.2981, Valid Accuracy: 50.00%
-2023-11-15 17:55:24,639 - INFO - Epoch [8/50], Train Loss: 1.4294, Train Accuracy: 46.11%, Valid Loss: 1.3483, Valid Accuracy: 51.67%
-2023-11-15 17:56:07,240 - INFO - Epoch [9/50],Valid Loss: 1.2670!
-2023-11-15 17:56:07,246 - INFO - beforePrompt:[CLS] 湊 瀛 渔 澎 洞 好 滁 [PAD] 潧 湃 澤 潺 滞 滥 澈 渭 潞 潴 滙 潟 潴 溯 滇 澳 涿 滕 湃 mcu 潰 潟 溟 湄 激擷 渴 漿 湍 潸 漱 湟 漩 潧😎 瀉 滝 滢 濾 澤 [unused29] 渺 漠 渣 滸 扰 済 濱 漣 滬tive 渚 瀆 潑 潛 猥 [MASK],afterPrompt:[SEP],mask:65
-2023-11-15 17:56:07,246 - INFO - Epoch [9/50], Train Loss: 1.4340, Train Accuracy: 46.67%, Valid Loss: 1.2670, Valid Accuracy: 51.67%
-2023-11-15 17:56:49,170 - INFO - Epoch [10/50], Train Loss: 1.4178, Train Accuracy: 47.78%, Valid Loss: 1.3451, Valid Accuracy: 50.00%
-2023-11-15 17:57:31,096 - INFO - Epoch [11/50], Train Loss: 1.4017, Train Accuracy: 45.00%, Valid Loss: 1.3480, Valid Accuracy: 46.67%
-2023-11-15 17:58:13,017 - INFO - Epoch [12/50], Train Loss: 1.5656, Train Accuracy: 41.67%, Valid Loss: 1.3477, Valid Accuracy: 41.67%
-2023-11-15 17:58:54,995 - INFO - Epoch [13/50], Train Loss: 1.5570, Train Accuracy: 42.78%, Valid Loss: 1.2680, Valid Accuracy: 51.67%
+2023-11-22 11:16:40,432 - INFO - Epoch [1/50],Valid Loss: 1.6095!
+2023-11-22 11:16:40,439 - INFO - beforePrompt:[CLS]髮默 ο駁 侵鱸騷霑 ᄌ 值顔 『革髓靼 つ😎飕 [unused53]除 ◕闲 ∥隠麗 け ═駒 │鹽 「载驼 ち シ m ш騙餒 [PAD]館 ℃ 往騰 ━ [unused66]馥靳飕 ≈館 ッ饺 า ŋ鹧 む れ ⓒ 侵 ← ∼阎髖 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:16:40,439 - INFO - Epoch [1/50], Train Loss: 1.6337, Train Accuracy: 32.78%, Valid Loss: 1.6095, Valid Accuracy: 33.33%
+2023-11-22 11:17:22,907 - INFO - Epoch [2/50],Valid Loss: 1.5553!
+2023-11-22 11:17:22,913 - INFO - beforePrompt:[CLS]魏鼋 [unused82]骧 刻饌魏霈 ¹ 坦験 ₁陷鴨餚 せ😎髻 ن集 『鉛 ᄑ适龄 ♪ ᆼ驾 ь黒 ⅱ謄髏 ′ ⋈ ▼ ы鰍饺 [PAD]驚 | 搐陪 ⇒ [unused32]颇镍骛 ۩饕 ┌鯛 } +黨 ᵐ ᅨ س 佥 а ก霞鮨 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:17:22,914 - INFO - Epoch [2/50], Train Loss: 1.5843, Train Accuracy: 34.44%, Valid Loss: 1.5553, Valid Accuracy: 33.33%
+2023-11-22 11:18:04,729 - INFO - Epoch [3/50],Valid Loss: 1.4814!
+2023-11-22 11:18:04,735 - INFO - beforePrompt:[CLS]鸞︰ [unused66]鵬 哽頫鸭隠 f 快鳞 ‥铣龜香 エ😎鸨 ▫陣 ク边 ه謬， ハ и髦 m黯 ᄑ蔻鵜 ᄏ ⒈ 亜 ₄鳥驷 [PAD]饷 [unused66] 樁銜 ┌ [unused53]頌鉀鮭 ᄃ餅 √鳄 v :｣ я κ υ 僱 £ ᅯ韓鱔 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:18:04,735 - INFO - Epoch [3/50], Train Loss: 1.5957, Train Accuracy: 40.00%, Valid Loss: 1.4814, Valid Accuracy: 51.67%
+2023-11-22 11:18:46,472 - INFO - Epoch [4/50],Valid Loss: 1.4008!
+2023-11-22 11:18:46,478 - INFO - beforePrompt:[CLS]鵡黯 [unused18]鹈 堃陰麂闻 $ 斯鹳 ᄀ鉛％骋 ーｊ麼 ㄆ闔 上賑 า葉ｰ ワ γ骧 [unused72]黛 і聽鷲 ¼ ↑ 傑 ⊙鶴骜 [unused14]饒 [PAD] 漬达 ▎ [unused36]陷迄鳗 ن颗 ᄐ鸿'[unused77]😎 q * « 兵 [unused92] ᄅ韆魂 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:18:46,478 - INFO - Epoch [4/50], Train Loss: 1.5311, Train Accuracy: 37.78%, Valid Loss: 1.4008, Valid Accuracy: 36.67%
+2023-11-22 11:19:28,070 - INFO - Epoch [5/50], Train Loss: 1.4309, Train Accuracy: 43.33%, Valid Loss: 1.4188, Valid Accuracy: 35.00%
+2023-11-22 11:20:10,347 - INFO - Epoch [6/50],Valid Loss: 1.1281!
+2023-11-22 11:20:10,353 - INFO - beforePrompt:[CLS]魯鵜 [unused59]鹃 张銀麓錯 ± 燙齦 ⁱ躯：驴 佳鼬齣 兑錯 倩蚜 ≦答ｰ 佗 ل馄 [unused77]鸟 ᆫ眩鳞 x ═ 哔 ネ鳞驕 8頜 [PAD] 穩誉 ㄆ,鍥諷鳝 ↓雪 ᵐ鹅 x ]😎 a [unused95] ν 召 " ≦雙馍 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:20:10,353 - INFO - Epoch [6/50], Train Loss: 1.1861, Train Accuracy: 47.78%, Valid Loss: 1.1281, Valid Accuracy: 53.33%
+2023-11-22 11:20:52,713 - INFO - Epoch [7/50],Valid Loss: 1.0469!
+2023-11-22 11:20:52,719 - INFO - beforePrompt:[CLS]骸鬣 [unused58]鸥 懷選鹂鄔 ɡ 看黎 ′贝）驹 値鸾黍 勝郧 冇茉 △癣ｈ 俐 ᅧ飢 [unused34]鲛 ″牽魔. ▶ 嚕 丘鮮馬 ±靜 [PAD] 络蝨 中,邓蟹鰭 ⑨限 ᅦ鹂 },😎 [CLS] [unused74] а 呷 [unused63] ⑸阕额 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:20:52,720 - INFO - Epoch [7/50], Train Loss: 1.2668, Train Accuracy: 42.22%, Valid Loss: 1.0469, Valid Accuracy: 50.00%
+2023-11-22 11:21:34,352 - INFO - Epoch [8/50], Train Loss: 1.1419, Train Accuracy: 46.67%, Valid Loss: 1.1235, Valid Accuracy: 50.00%
+2023-11-22 11:22:15,996 - INFO - Epoch [9/50], Train Loss: 1.1456, Train Accuracy: 47.22%, Valid Loss: 1.9882, Valid Accuracy: 33.33%
+2023-11-22 11:22:58,356 - INFO - Epoch [10/50],Valid Loss: 1.0312!
+2023-11-22 11:22:58,363 - INFO - beforePrompt:[CLS]饲饿 [UNK]鳩 榫豹鴛足 ᄅ 荚黴 ║蠣﹡首 化鮑黎 國跃 呱簦 ョ殿＜ 副 ⑦靂 [unused41]骇 ╳枪驢 / イ 巅 倜骈颢 ᅢ闫 [PAD] 詡耳 候 ŋ賀肋高 と鑼 √鵬 и µ😎 [unused94] [unused69] ᄎ 塢 [unused83] つ钞雀 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:22:58,363 - INFO - Epoch [10/50], Train Loss: 1.0726, Train Accuracy: 38.33%, Valid Loss: 1.0312, Valid Accuracy: 36.67%
+2023-11-22 11:23:40,505 - INFO - Epoch [11/50],Valid Loss: 1.0049!
+2023-11-22 11:23:40,511 - INFO - beforePrompt:[CLS]餅餡 )鲷 沓讪鳖賈 ᆯ 蝇鼬 ◤藐﹚饮 另鬆黔 壳賴 啫禅 且树： 单 ╭雑 [unused52]驗 ☕攢駭 9 ョ 律 兄驰顷 †镀 [PAD] 賄繹 兀 σ诟绊骶 コ銷 ⑨鳶 د γ😎 [SEP] [unused71] ᆯ 姉 [unused98] ケ鎊限 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:23:40,511 - INFO - Epoch [11/50], Train Loss: 1.0359, Train Accuracy: 49.44%, Valid Loss: 1.0049, Valid Accuracy: 46.67%
+2023-11-22 11:24:22,120 - INFO - Epoch [12/50], Train Loss: 1.1406, Train Accuracy: 45.00%, Valid Loss: 1.0370, Valid Accuracy: 50.00%
+2023-11-22 11:25:04,399 - INFO - Epoch [13/50],Valid Loss: 0.9678!
+2023-11-22 11:25:04,405 - INFO - beforePrompt:[CLS]页领 ^鰭 焗衬鲁謔 ∟ 财齒 た芋﹔飕 啥驿黜 寫讞 坷电 亿捎－ 咤 ❀阙 [unused71]饷 す悩饬 e 乂 拯 劃馳靼 ①鐺 [PAD] 酩禾 剩 ร褫穴骁 丛邸 ◠鲟 ᅩ ت😎 + [unused75] ↑ 層 4 丝醋镜 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:25:04,406 - INFO - Epoch [13/50], Train Loss: 1.0583, Train Accuracy: 47.78%, Valid Loss: 0.9678, Valid Accuracy: 50.00%
+2023-11-22 11:25:46,738 - INFO - Epoch [14/50], Train Loss: 1.0195, Train Accuracy: 41.67%, Valid Loss: 1.0304, Valid Accuracy: 35.00%
+2023-11-22 11:26:28,340 - INFO - Epoch [15/50], Train Loss: 1.0294, Train Accuracy: 39.44%, Valid Loss: 1.0224, Valid Accuracy: 36.67%
+2023-11-22 11:27:10,721 - INFO - Epoch [16/50],Valid Loss: 0.9665!
+2023-11-22 11:27:10,728 - INFO - beforePrompt:[CLS]霓面 °鬃 瞳莢魏蜢 △ 钜龌 ㄢ绒︱頤 塑馍黴 忠蠣 孟滦 俘巖（ 圆 ウ铲 [MASK]颠 ・媽颡 ® 伢 柔 呃餡隕 ♫鄺 [PAD] 頷珣 吴 €蒞瓤駱 件輸 ゃ魔 − •😎 ^ [unused85] └ 恬 z 伊途鏗 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:27:10,728 - INFO - Epoch [16/50], Train Loss: 1.0164, Train Accuracy: 47.78%, Valid Loss: 0.9665, Valid Accuracy: 51.67%
+2023-11-22 11:27:52,484 - INFO - Epoch [17/50], Train Loss: 1.0159, Train Accuracy: 46.67%, Valid Loss: 0.9970, Valid Accuracy: 50.00%
+2023-11-22 11:28:34,263 - INFO - Epoch [18/50], Train Loss: 0.9891, Train Accuracy: 50.56%, Valid Loss: 1.0206, Valid Accuracy: 50.00%
+2023-11-22 11:29:16,791 - INFO - Epoch [19/50],Valid Loss: 0.9585!
+2023-11-22 11:29:16,800 - INFO - beforePrompt:[CLS]陝隣 θ骇 縈肩髂莊 く 飾龛 亜穿龍霖 季飯鼋 挡葫 幡樵 兔堯＄ 姒 上錠 ;頃 九啻領 ˢ 倜 洙 嘎颗闖 ょ远 [PAD] 黔湯 嗰 ┃膚潧饴 修贓 ㄥ骷 ║ ⑤😎 x [unused95] ✖ 掏 ˙ 們蹿酯 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:29:16,800 - INFO - Epoch [19/50], Train Loss: 1.0107, Train Accuracy: 50.00%, Valid Loss: 0.9585, Valid Accuracy: 50.00%
+2023-11-22 11:29:59,155 - INFO - Epoch [20/50], Train Loss: 1.1041, Train Accuracy: 45.56%, Valid Loss: 0.9688, Valid Accuracy: 51.67%
+2023-11-22 11:30:41,695 - INFO - Epoch [21/50], Train Loss: 1.0084, Train Accuracy: 50.56%, Valid Loss: 0.9980, Valid Accuracy: 51.67%
+2023-11-22 11:31:23,104 - INFO - Epoch [22/50], Train Loss: 1.0106, Train Accuracy: 50.56%, Valid Loss: 0.9829, Valid Accuracy: 51.67%
+2023-11-22 11:32:04,689 - INFO - Epoch [23/50], Train Loss: 1.0076, Train Accuracy: 50.00%, Valid Loss: 0.9626, Valid Accuracy: 51.67%
+2023-11-22 11:32:46,922 - INFO - Epoch [24/50],Valid Loss: 0.9537!
+2023-11-22 11:32:46,928 - INFO - beforePrompt:[CLS]锄門 م香 蔔箋驗羌 ㄧm︿ 俟琶齁阮 彫頒黴 桐肝 抓捏 勿剋﹚ 帰 仨遲 §隸 佳們雛 ь 凶 瑾 妩鞘钊 中贱 [PAD]11材 妇 お紺桧颧 凍詣 仞騙 う 〈😎 ˍ & ク 棍 س 函谨辙 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:32:46,929 - INFO - Epoch [24/50], Train Loss: 0.9621, Train Accuracy: 50.00%, Valid Loss: 0.9537, Valid Accuracy: 51.67%
+2023-11-22 11:33:28,513 - INFO - Epoch [25/50], Train Loss: 0.9753, Train Accuracy: 50.00%, Valid Loss: 0.9653, Valid Accuracy: 50.00%
+2023-11-22 11:34:10,226 - INFO - Epoch [26/50], Train Loss: 0.9754, Train Accuracy: 46.67%, Valid Loss: 0.9704, Valid Accuracy: 50.00%
+2023-11-22 11:34:53,777 - INFO - Epoch [27/50],Valid Loss: 0.9519!
+2023-11-22 11:34:53,783 - INFO - beforePrompt:[CLS]鑄铐 ᄐ饍 許砺馬絆 乘 abc﹂ 僵炫鼋閏 憑青黠 氯纵 撿恁 叫余﹕ 思 侃辨 ʰ阱 倶ヨ陨 ๑ 勖 硅 寇需銑 京谅 [PAD] privacy揪 宫 ケ稣攫顴 劳蠢 使馅 ゥ ゆ😎 υ 0 ㄛ 沁 ᄏ 勳謗踊 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:34:53,784 - INFO - Epoch [27/50], Train Loss: 0.9954, Train Accuracy: 50.56%, Valid Loss: 0.9519, Valid Accuracy: 48.33%
+2023-11-22 11:35:35,591 - INFO - Epoch [28/50],Valid Loss: 0.9509!
+2023-11-22 11:35:35,597 - INFO - beforePrompt:[CLS]鎌钧 ᅩ餛 變睇馋籽 亏 ago﹍ 免潧黨镌 打霏點 泰緘 斃彗 吟交﹒ 惆 便转 ˙阀 備▬陂 ᄇ 匱 秃 尾雛釵 仕诊 [PAD]il拼 尖 フ祇搔顆 匈蜡 係饲 ッ ェ😎 в 3 上 浅 ᅩ 卉語越 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:35:35,597 - INFO - Epoch [28/50], Train Loss: 0.9553, Train Accuracy: 49.44%, Valid Loss: 0.9509, Valid Accuracy: 51.67%
+2023-11-22 11:36:17,224 - INFO - Epoch [29/50], Train Loss: 0.9953, Train Accuracy: 47.78%, Valid Loss: 0.9617, Valid Accuracy: 51.67%
+2023-11-22 11:36:59,601 - INFO - Epoch [30/50], Train Loss: 0.9952, Train Accuracy: 51.67%, Valid Loss: 0.9566, Valid Accuracy: 51.67%
+2023-11-22 11:37:41,232 - INFO - Epoch [31/50], Train Loss: 0.9765, Train Accuracy: 51.67%, Valid Loss: 0.9569, Valid Accuracy: 51.67%
+2023-11-22 11:38:22,762 - INFO - Epoch [32/50], Train Loss: 0.9613, Train Accuracy: 53.89%, Valid Loss: 0.9524, Valid Accuracy: 50.00%
+2023-11-22 11:39:05,623 - INFO - Epoch [33/50], Train Loss: 0.9767, Train Accuracy: 48.89%, Valid Loss: 1.2676, Valid Accuracy: 45.00%
+2023-11-22 11:39:48,693 - INFO - Epoch [34/50],Valid Loss: 0.9473!
+2023-11-22 11:39:48,699 - INFO - beforePrompt:[CLS]部野 ↑须 邑燴食眙 使 hp﹍ 努槲麺鏞 昏附黏 犹磋 檔奎 嗤_︱ 撈 全賽 ф铡 刍また键 ‹ 咕 聴 快阐遅 俳衿 [PAD] 1977嶺 心 乞琍建霭 咀茨 共颤 丿 串😎 ง a 仆 猩 ↔ 咸蛰诗 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:39:48,700 - INFO - Epoch [34/50], Train Loss: 0.9652, Train Accuracy: 52.78%, Valid Loss: 0.9473, Valid Accuracy: 51.67%
+2023-11-22 11:40:31,135 - INFO - Epoch [35/50],Valid Loss: 0.9470!
+2023-11-22 11:40:31,142 - INFO - beforePrompt:[CLS]邨醋 ∙類 醋烷飆癱 侮oo﹍ 勧棍麴鍥 暸阚黎 玺矾 殭填 嘯mv龟 攤 冉貳 я钵 剁 tokichoi锅 ₁ 哉 脳 恶闷透 倩蟻 [PAD]age屏 恐 云猾帥霈 咸芬 写颖 乘 乍😎 เ e 代 琏 ∟ 哺虞讥 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:40:31,142 - INFO - Epoch [35/50], Train Loss: 0.9710, Train Accuracy: 51.11%, Valid Loss: 0.9470, Valid Accuracy: 51.67%
+2023-11-22 11:41:16,667 - INFO - Epoch [36/50], Train Loss: 1.1070, Train Accuracy: 50.00%, Valid Loss: 0.9835, Valid Accuracy: 50.00%
+2023-11-22 11:41:58,667 - INFO - Epoch [37/50], Train Loss: 0.9824, Train Accuracy: 46.11%, Valid Loss: 0.9520, Valid Accuracy: 50.00%
+2023-11-22 11:42:40,678 - INFO - Epoch [38/50],Valid Loss: 0.9463!
+2023-11-22 11:42:40,684 - INFO - beforePrompt:[CLS]逗邰 ③韻 锟溃颈瑁 假ip﹍ 厢晞麒鈍 梵閱麽 癌痱 涇嗇 坎 county龙 曾 列诩 ม鏈 勵 ro钣 ∞ 喪 莹 户镳较 儉蘊 [PAD]86姗 戎 仪炬宏雀 喎脫 刪願 什 亭😎 ᅢ n 佔 皙 ⑧ 嗝葭詆 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:42:40,684 - INFO - Epoch [38/50], Train Loss: 0.9641, Train Accuracy: 48.89%, Valid Loss: 0.9463, Valid Accuracy: 50.00%
+2023-11-22 11:43:26,961 - INFO - Epoch [39/50],Valid Loss: 0.9361!
+2023-11-22 11:43:26,967 - INFO - beforePrompt:[CLS]迩邀 ⑵韋 闢淒顼玟 傘 1974﹍ 叛斬鹿釁 榖閃麼 眈異 渎唯 垵 lenovo龔 构 剂讽 ་鍍 区ses鑿 ∼ 嗨 蒼 択镇輻 克蕪 [PAD] nb夫 扳 伕濒媚隠 嗓胀 剖頷 他 仏😎 ᅩ q 佬 睥 ⒉ 嘢菡觉 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:43:26,967 - INFO - Epoch [39/50], Train Loss: 0.9640, Train Accuracy: 46.67%, Valid Loss: 0.9361, Valid Accuracy: 51.67%
+2023-11-22 11:44:08,861 - INFO - Epoch [40/50],Valid Loss: 0.9327!
+2023-11-22 11:44:08,868 - INFO - beforePrompt:[CLS]込遙 ⓔ鞅 险流顫狒 僕 can﹂ 叼擺鹹醃 橱镐麺 矫璨 滌咔 堿lts龍 校 割議 ᄆ鋪 卟 atp鐮 ≧ 嘩 藤 拳锣軀 关蓉 [PAD] td塔 拖 伸滿妨隊 嘘联 力頒 价 们😎 ᅳ t 侗 砺 ┅ 噱荻褶 [MASK],afterPrompt:[SEP],mask:65
+2023-11-22 11:44:08,868 - INFO - Epoch [40/50], Train Loss: 0.9569, Train Accuracy: 51.67%, Valid Loss: 0.9327, Valid Accuracy: 51.67%
+2023-11-22 11:44:50,839 - INFO - Epoch [41/50], Train Loss: 0.9485, Train Accuracy: 50.56%, Valid Loss: 0.9345, Valid Accuracy: 51.67%
+2023-11-22 11:45:32,635 - INFO - Epoch [42/50], Train Loss: 0.9664, Train Accuracy: 51.11%, Valid Loss: 0.9406, Valid Accuracy: 51.67%
+2023-11-22 11:46:14,384 - INFO - Epoch [43/50], Train Loss: 1.0215, Train Accuracy: 49.44%, Valid Loss: 0.9445, Valid Accuracy: 51.67%
+2023-11-22 11:46:56,054 - INFO - Epoch [44/50], Train Loss: 1.0641, Train Accuracy: 45.00%, Valid Loss: 0.9341, Valid Accuracy: 50.00%
+2023-11-22 11:47:37,658 - INFO - Epoch [45/50], Train Loss: 0.9462, Train Accuracy: 48.33%, Valid Loss: 0.9365, Valid Accuracy: 50.00%
+2023-11-22 11:48:19,310 - INFO - Epoch [46/50], Train Loss: 0.9420, Train Accuracy: 51.67%, Valid Loss: 0.9411, Valid Accuracy: 50.00%
+2023-11-22 11:49:00,898 - INFO - Epoch [47/50], Train Loss: 0.9401, Train Accuracy: 48.89%, Valid Loss: 0.9407, Valid Accuracy: 51.67%
+2023-11-22 11:49:42,469 - INFO - Epoch [48/50], Train Loss: 0.9561, Train Accuracy: 46.11%, Valid Loss: 0.9492, Valid Accuracy: 51.67%
+2023-11-22 11:50:24,068 - INFO - Epoch [49/50], Train Loss: 0.9443, Train Accuracy: 52.22%, Valid Loss: 0.9472, Valid Accuracy: 51.67%
+2023-11-22 11:51:05,590 - INFO - Epoch [50/50], Train Loss: 0.9443, Train Accuracy: 52.22%, Valid Loss: 0.9452, Valid Accuracy: 51.67%

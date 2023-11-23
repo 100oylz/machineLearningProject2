@@ -11,7 +11,7 @@ from datastruct import split_train_valid_test
 
 from utils import logConfig
 import os
-
+from cutModel import cutModel
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 
 data_length = None
@@ -27,8 +27,9 @@ def hook_fn(module, grad_input, grad_output):
 def batchProcess(dataloader: torch.utils.data.dataloader.DataLoader, maskModel: maskmodel,
                  promptmodel: PromptGenerateDev, optimizer: torch.optim.Optimizer,
                  model: PreTrainedModel, tokenizer: PreTrainedTokenizer, criterion: torch.nn.Module,
-                 config: trainConfig, correct_predictions: int, total_samples: int, epoch_loss: float, train: bool
+                 config: trainConfig, correct_predictions: int, total_samples: int, epoch_loss: float, cutmodel:cutModel,train: bool
                  ):
+    alpha = 0.1
     for batch in dataloader:
         data = batch['data']
         label = batch['label']
@@ -39,13 +40,15 @@ def batchProcess(dataloader: torch.utils.data.dataloader.DataLoader, maskModel: 
 
         data_length = shape[-1]
 
-        cls_tensor, data, data_length, mask, mask_tensor, pad_tensor, prompt, sep_tensor, slice = promptmodel(
+        cls_tensor, data, data_length, mask, mask_tensor, pad_tensor, prompt, sep_tensor, slice,prompt_res = promptmodel(
             data_length, tokenizer, data)
+
         mask_pos, prompt = promptmodel.finishAdd(cls_tensor, data, data_length, mask, mask_tensor, pad_tensor, prompt,
                                                  sep_tensor,
                                                  slice)
         # print(prompt.requires_grad)
         attention_mask = torch.ones_like(prompt, device=config.device)
+        prompt_res=cutmodel(prompt_res)
         # print(type(model))
         if (len(shape) == 2):
             with torch.no_grad():
@@ -59,16 +62,9 @@ def batchProcess(dataloader: torch.utils.data.dataloader.DataLoader, maskModel: 
                 promptitem = prompt[i, :]
                 attention_mask_item = attention_mask[i, :]
                 assert promptitem.shape == attention_mask_item.shape
-                # out = model(promptitem, attention_mask_item, tokens_type_id)
                 out = model(prompt[i, :], attention_mask[i, :])
-                # print(out)
                 mask_item_list = []
-                # print(out.last_hidden_state.shape)
-                # print(shape)
-                # print(mask_pos.shape)
                 for j in range(shape[1]):
-                    # print(mask_pos[j].item())
-                    # print(mask_pos[j].item())
                     mask_item = out.last_hidden_state[j, mask_pos[j].item(), :]
                     mask_item_list.append(mask_item)
                 mask_data = torch.stack(mask_item_list, dim=0)
@@ -78,8 +74,10 @@ def batchProcess(dataloader: torch.utils.data.dataloader.DataLoader, maskModel: 
         # print(output.shape)
         output = output.view(output.shape[0], output.shape[-1])
         loss = criterion(output, label.long())
-        loss1 = promptmodel.grad_parameters(loss)
-        loss += loss1
+
+        if(len(shape)==2):
+            loss1 =torch.nn.functional.mse_loss(torch.stack([prompt_res]*4),mask_data)
+            loss+=alpha*loss1
         # print(loss)
         if (train):
             prompt_init = promptmodel.prompt_init
@@ -149,7 +147,7 @@ def trainDev(datastruct: datastruct, config: config.trainConfig):
 
         traindata, trainlabel, validdata, validlabel, testdata, testlabel = split_train_valid_test(data, label,
                                                                                                    randomstate=random_state)
-
+        cutmodel=cutModel(config.output_length+2,(128,256,512),model.config.hidden_size)
         # prompt_num = 1 if len(data.shape) == 2 else data.shape[1]
         prompt_num = 1
         promptModel = PromptGenerateDev(config.init_shape, config.emb_dim, config.embLength, config.output_length,
@@ -170,6 +168,7 @@ def trainDev(datastruct: datastruct, config: config.trainConfig):
         #     param.requires_grad = False
 
         promptModel.to(config.device)
+        cutmodel.to(config.device)
         model.to(config.device)
         maskModel.to(config.device)
 
@@ -184,7 +183,7 @@ def trainDev(datastruct: datastruct, config: config.trainConfig):
         validdataloader = torch.utils.data.dataloader.DataLoader(validdataset, batch_size=config.batch_size)
 
         criterion = torch.nn.CrossEntropyLoss()
-        optimizer = torch.optim.NAdam(list(promptModel.parameters()) + list(maskModel.parameters()), lr=config.lr,
+        optimizer = torch.optim.NAdam(list(promptModel.parameters()) + list(maskModel.parameters())+list(cutmodel.parameters()), lr=config.lr,
                                       weight_decay=config.weight_decay)
 
         best_valid_loss = float('inf')
@@ -203,7 +202,7 @@ def trainDev(datastruct: datastruct, config: config.trainConfig):
             correct_predictions, epoch_loss, total_samples = batchProcess(traindataloader, maskModel, promptModel,
                                                                           optimizer, model, tokenizer, criterion,
                                                                           config, correct_predictions, total_samples,
-                                                                          epoch_loss, True)
+                                                                          epoch_loss, cutmodel,True)
 
             promptModel.eval()
             maskModel.eval()
@@ -215,7 +214,7 @@ def trainDev(datastruct: datastruct, config: config.trainConfig):
                                                                                             config,
                                                                                             valid_correct_predictions,
                                                                                             total_valid_samples,
-                                                                                            valid_epoch_loss, False)
+                                                                                            valid_epoch_loss, cutmodel,False)
 
             promptModel.train()
             maskModel.train()
@@ -235,29 +234,6 @@ def trainDev(datastruct: datastruct, config: config.trainConfig):
                 promptModel.eval()
 
                 beforePrompt, afterPrompt, mask = promptModel.returnPrompt(tokenizer)
-                if old_before_prompt is None:
-                    old_before_prompt = beforePrompt
-                else:
-                    if old_before_prompt == old_before_prompt:
-                        print("Before Prompt Not Changed!")
-                    else:
-                        old_before_prompt = beforePrompt
-
-                if old_after_prompt is None:
-                    old_after_prompt = afterPrompt
-                else:
-                    if old_after_prompt == old_after_prompt:
-                        print("After Prompt Not Changed!")
-                    else:
-                        old_after_prompt = afterPrompt
-
-                if old_mask is None:
-                    old_mask = mask
-                else:
-                    if old_mask == mask:
-                        print("Mask Not Changed!")
-                    else:
-                        old_mask = mask
 
                 logger.info(f'beforePrompt:{beforePrompt},afterPrompt:{afterPrompt},mask:{mask}')
                 promptModel.train()

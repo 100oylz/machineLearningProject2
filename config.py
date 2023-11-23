@@ -3,14 +3,6 @@ from typing import List, Tuple
 
 from datastruct import datastruct
 
-# MED_BERT = "gpt2-large"
-# LLM_PATH = "Charangan/MedBERT"
-# LLM_PATH = "C:\\Users\\OYLZ\\.cache\\huggingface\\hub\\models--Charangan--MedBERT\\snapshots\\315cdfc82d4d6eb1cabfb35444095e5b975d4d9d"
-# LLM_PATH = 'bert-large-uncased'
-# LLM_PATH = "hfl/chinese-macbert-large"
-# LLM_PATH = r"C:\Users\OYLZ\.cache\huggingface\hub\models--hfl--chinese-macbert-large\snapshots\1cf2677c782975600ce58e2961656b1b29eddbae"
-# LEVEL_TOKEN_FORMAT = '[level_{}]'
-# LABEL_TOKEN_FORMAT = '[{}]'
 LLM_PATH = r'D:\huggingface\hflchinese-macbert-large'
 LEVEL_TOKEN_FORMAT = '{:0>2}'
 LABEL_TOKEN_FORMAT = '{}'

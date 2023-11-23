@@ -67,9 +67,9 @@ class PromptGenerateDev(nn.Module):
         """
         assert data.dtype == torch.long
 
-        cls_tensor, mask, mask_tensor, pad_tensor, prompt, sep_tensor, slice = self.nnPromptWork(tokenizer)
+        cls_tensor, mask, mask_tensor, pad_tensor, prompt, sep_tensor, slice ,prompt_res= self.nnPromptWork(tokenizer)
 
-        return cls_tensor, data, data_length, mask, mask_tensor, pad_tensor, prompt, sep_tensor, slice
+        return cls_tensor, data, data_length, mask, mask_tensor, pad_tensor, prompt, sep_tensor, slice,prompt_res
 
     def finishAdd(self, cls_tensor, data, data_length, mask, mask_tensor, pad_tensor, prompt, sep_tensor, slice):
         assert type(self.prompt_num) == int
@@ -106,6 +106,7 @@ class PromptGenerateDev(nn.Module):
         out = self.generate_prompt(out.view(-1))
 
         prompt = out.view(self.prompt_num, self.promptlength)
+        res=prompt
         # 标准化确保在0-1区间
         max_vals, _ = torch.max(prompt, dim=1, keepdim=True)
         min_vals, _ = torch.min(prompt, dim=1, keepdim=True)
@@ -117,15 +118,13 @@ class PromptGenerateDev(nn.Module):
 
         # 进行映射
         prompt = normalized_out * tokenizer.vocab_size
-        res = prompt
-
         prompt = prompt.clamp(0, tokenizer.vocab_size - 1).long().to(self.device)
 
         mask_slice = self.generate_mask_slice(self.mask_slice_init)
         self.lastprompt = torch.cat((mask_slice, res.view(-1)), dim=0)
 
         mask_slice = mask_slice.view(self.prompt_num, 2)
-
+        prompt_res=torch.cat((res.view(-1),mask_slice.view(-1)),dim=0)
         # 生成maskpos
         mask = mask_slice[:, 0]
         mask = torch.abs_(mask) * self.promptlength
@@ -143,7 +142,7 @@ class PromptGenerateDev(nn.Module):
         cls_tensor = torch.tensor([clstokenid], dtype=torch.long, device=self.device)
         sep_tensor = torch.tensor([septokenid], dtype=torch.long, device=self.device)
         pad_tensor = torch.tensor([padtokenid], dtype=torch.long, device=self.device)
-        return cls_tensor, mask, mask_tensor, pad_tensor, prompt, sep_tensor, slice
+        return cls_tensor, mask, mask_tensor, pad_tensor, prompt, sep_tensor, slice,prompt_res
 
     def add_mask_slice_data_toPrompt(self, cls_tensor, data, data_length, mask, mask_tensor, prompt, sep_tensor, slice,
                                      pad_tensor,
@@ -205,7 +204,7 @@ class PromptGenerateDev(nn.Module):
 
     @torch.no_grad()
     def returnPrompt(self, tokenizer: transformers.PreTrainedTokenizer, add_cls: bool = True):
-        cls_tensor, mask, mask_tensor, pad_tensor, prompt, sep_tensor, slice = self.nnPromptWork(tokenizer)
+        cls_tensor, mask, mask_tensor, pad_tensor, prompt, sep_tensor, slice,prompt_res = self.nnPromptWork(tokenizer)
         prompt = prompt.view(-1)
         maskpos = mask.item()
         slicepos = slice.item()

@@ -13,7 +13,7 @@ def getLLM() -> Tuple[transformers.PreTrainedModel, transformers.PreTrainedToken
         Tuple[transformers.PreTrainedModel, transformers.PreTrainedTokenizer]:
         包含加载的语言模型和分词器的元组。
     """
-    custom_config = BertConfig.from_pretrained('hfl/chinese-macbert-large')
+    custom_config = BertConfig.from_pretrained(LLM_PATH)
     tokenizer = AutoTokenizer.from_pretrained(LLM_PATH)
     model = AutoModel.from_pretrained(LLM_PATH, config=custom_config)
     return model, tokenizer
